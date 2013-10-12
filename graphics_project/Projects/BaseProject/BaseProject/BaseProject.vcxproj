@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="background.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="object.cpp" />
+    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="top.cpp" />
+    <ClCompile Include="vertexattributes.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="background_gradient.frag" />
+    <None Include="background_gradient.vert" />
+    <None Include="glew32.dll" />
+    <None Include="solid_shader.frag" />
+    <None Include="solid_shader.vert" />
+    <None Include="stripe_model_space.frag" />
+    <None Include="stripe_model_space.vert" />
+    <None Include="top_shader.frag" />
+    <None Include="top_shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="background.h" />
+    <ClInclude Include="object.h" />
+    <ClInclude Include="shader.h" />
+    <ClInclude Include="top.h" />
+    <ClInclude Include="vertexattributes.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{949EAF8E-A410-4EAD-8ABC-02D26A557BC2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>BaseProject</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>L:\My Documents\Perry_Space_Program\Graphics\glew\include;C:\Users\TEMP\Desktop\Graphics\glm;C:\Users\TEMP\Desktop\Graphics\freeglut\include;E:\Graphics\freeglut\include;E:\Graphics\glm;E:\Graphics\glm;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Users\Mitchell Lutzke\Desktop\graphics\glm;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>L:\My Documents\Perry_Space_Program\Graphics\glew\include;C:\Users\TEMP\Desktop\Graphics\glm;C:\Users\TEMP\Desktop\Graphics\freeglut\include;E:\Graphics\freeglut\include;E:\Graphics\glm;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Users\Mitchell Lutzke\Desktop\graphics\glm;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

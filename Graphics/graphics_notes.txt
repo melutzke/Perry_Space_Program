@@ -1,0 +1,135 @@
+Graphics Notes
+
+bbq thurs. 6 -> 8ish
+
+Project Tip
+ -> Ask for depth buffer
+	enable depth testing
+
+* If you're spinning something around and looks good in wireframe, but looks bad when solid, depth buffer isn't enabled.
+
+Front/back not being distinguished properly
+
+GLUT_INIT ask for depth buffer
+
+Anything intended for GLUT begins with GLUT (surprise)
+
+Anything intended for GL begins with GL (also surprise)
+
+If the constant ends with BIT you can OR them together, they are a bitmask.
+
+(there is more about this stuff in Piazza. )
+
+
+
+
+### Projections
+
+PROTIP - Make vertices relative to each other w/ a variable. We can use this to scale from model space to coord space
+
+Model vertices relative to some assumed origin
+
+(-1,0) _______x_________ (1,0)
+	object or model coord space
+
+To transform it from model to world space, we have
+
+MODELVIEW MATRIX (brings it to 'eye-space')
+Origin of eyespace is the eye
+
+Definition of PROJECTION
+	taking information in higher level space, and looking at it in a lower dimensional space.
+		transforming 3d set of objects to a 2d view
+		shadows are a projection
+
+Two kinds of projection
+	- perspective
+	- orthographic
+
+Orthographic vs Perspective
+
+
+
+		|    	()
+		|       /\
+		|       ||
+	<)cop	|_______/\
+		|	
+
+gl v operators
+
+glVertex3d
+	2f
+	(old fashion function overloading)
+
+one more form of syntax
+
+vertex3fv(...   <-- a pointer to three floats
+
+*** Materials are bonus in project 1, look them up
+
+
+
+We begin in...
+
+Object / Modeling coordinates
+	(transformed with modelview matrix)
+Eye Space
+	(goes through projection matrix)
+Clip Space -> gives you a trivial way to see if a vertex is in view or not
+		- easy to test against a -1 to 1 cube
+	(perspective decision)
+NDC
+	(glViewport decision) -> glViewport(x, y, w, h)  <-- w, h in pixels!
+
+		
+
+
+Two ways of creating the projection matrix - dun duun DUUUUUUUN.
+
+GLM
+	-> perspective(fov, aspect-ratio, near dist, far dist)  <-- produces a complicated matrix for us, yay
+and
+GLM
+	-> frustum(left, right, top, bottom, near, far)
+		- good for ignoring bezel
+
+FUNCTION LOOKAT is your friend
+	takes 3 vec3 arguments lookat(vec3 eye, vec3 gaze_direction, vec3 up)
+	- it gives you a matrix
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+New lecture
+
+GL ERRORS, CHECK EM'
+
+ADS Model - began with Bui Tuong Phong - 1942-1972
+	- Phong reflection model/shading model
+
+	- diffuse models 'microfacets'
+
+	- diffuse doesn't take into account eye position
+		- specular does. that's how it does 'shiny'
+		- greatest at reflection angle
+		- exponent of shinyness
+			-plastic has a bit of a white specular shine to it
+			-metal tends to look like the color of the light
+
+Computer graphics is the ancient art of "Chi Ting"
+
+Gouraud Shading
+	phong illumination on all three vertices, then linearly interpolated them to blend.

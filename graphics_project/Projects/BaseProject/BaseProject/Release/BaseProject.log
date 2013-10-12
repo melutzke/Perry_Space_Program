@@ -1,0 +1,53 @@
+﻿Build started 10/12/2013 3:12:54 PM.
+     1>Project "L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt background.cpp main.cpp object.cpp shader.cpp top.cpp vertexattributes.cpp
+         background.cpp
+         main.cpp
+         object.cpp
+         shader.cpp
+         top.cpp
+         vertexattributes.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\Release\BaseProject.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"L:\My Documents\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:C:\Users\TEMP\Desktop\Graphics\freeglut\lib /LIBPATH:E:\Graphics\freeglut\lib /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib" /LIBPATH:"C:\Program Files (x86)\Visual Leak Detector\lib\Win32" /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib" freeglut.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\Release\BaseProject.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\Release\BaseProject.lib" /MACHINE:X86 /SAFESEH Release\background.obj
+         Release\main.obj
+         Release\object.obj
+         Release\shader.obj
+         Release\top.obj
+         Release\vertexattributes.obj
+     1>background.obj : error LNK2001: unresolved external symbol __imp____glewBindBuffer
+     1>background.obj : error LNK2001: unresolved external symbol __imp____glewVertexAttribPointer
+     1>background.obj : error LNK2001: unresolved external symbol __imp____glewUseProgram
+     1>background.obj : error LNK2001: unresolved external symbol __imp____glewBindVertexArray
+     1>background.obj : error LNK2001: unresolved external symbol __imp____glewEnableVertexAttribArray
+     1>main.obj : error LNK2001: unresolved external symbol __imp__glewInit
+     1>object.obj : error LNK2001: unresolved external symbol __imp____glewDeleteVertexArrays
+     1>object.obj : error LNK2001: unresolved external symbol __imp____glewGenVertexArrays
+     1>object.obj : error LNK2001: unresolved external symbol __imp____glewBufferData
+     1>object.obj : error LNK2001: unresolved external symbol __imp____glewDeleteBuffers
+     1>object.obj : error LNK2001: unresolved external symbol __imp____glewGenBuffers
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewGetAttachedShaders
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewDeleteShader
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewCreateShader
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderInfoLog
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewLinkProgram
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewCompileShader
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewDetachShader
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewUniform2iv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewShaderSource
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewUniform4fv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewUniformMatrix4fv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewUniform1f
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewUniformMatrix3fv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewGetProgramiv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewDeleteProgram
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewGetShaderiv
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewCreateProgram
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewAttachShader
+     1>shader.obj : error LNK2001: unresolved external symbol __imp____glewGetUniformLocation
+     1>L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\Release\BaseProject.exe : fatal error LNK1120: 30 unresolved externals
+     1>Done Building Project "L:\My Documents\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:11.82

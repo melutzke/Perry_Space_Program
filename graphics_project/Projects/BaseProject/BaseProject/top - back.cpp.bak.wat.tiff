@@ -1,0 +1,210 @@
+/*	Perry Kivolowitz - University of Wisconsin - Madison 
+	Computer Sciences Department
+
+	A sample hello world like program demonstrating modern
+	OpenGL techniques. 
+
+	Created:	2/25/13
+	Updates:
+*/
+
+#include <iostream>
+#include "top.h"
+
+using namespace std;
+using namespace glm;
+
+inline vec4 MakeColor(int r, int g, int b)
+{
+	return vec4(float(r) / 255.0f, float(g) / 255.0f, float(b) / 255.0f, 1.0f);
+}
+
+Top::Top() : Object()
+{
+	vec4 lighter_color(MakeColor(138,54,15));
+	vec4 darker_color = vec4(vec3(lighter_color) / 3.0f, 1.0f);
+	this->colors[0] = darker_color;
+	this->colors[1] = lighter_color;
+}
+
+inline int ColorIndex(int i, int slices)
+{
+	return (i / (slices / 4)) % 2;
+}
+
+bool Top::Initialize(int slices)
+{
+	if (this->GLReturnedError("Top::Initialize - on entry"))
+		return false;
+
+	if (!super::Initialize())
+		return false;
+
+	if (slices < 0)
+		slices = 1;
+
+	slices *= 4;
+
+	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
+	const vec3 y_axis(0.0f, 1.0f, 0.0f);
+
+	float increment =  360.0f / float(slices);
+
+	mat4 m = rotate(mat4(1.0f), -increment, y_axis);
+	mat4 n = rotate(mat4(1.0f), -increment / 2.0f, y_axis);
+
+	vec3 prv_point, pv;
+	prv_point = vec3(m * x_axis);
+	pv = vec3(n * x_axis);
+
+	const vec3 apex(0.0f, 1.0f, 0.0f);
+	const vec3 nadir(0.0f, -1.0f, 0.0f);
+	
+	float normal_scalar = 0.125f;
+
+	m = rotate(m, increment, y_axis);
+	n = rotate(n, increment, y_axis);
+
+	for (int i = 0; i < slices; ++i)
+	{
+		VertexAttributesPCN cur_vertex , nxt_vertex;
+
+		vec3 cv = vec3(n * x_axis);
+		cur_vertex.position = vec3(m * x_axis);
+		cur_vertex.color = vec3(this->colors[ColorIndex(i, slices)]);
+
+		m = rotate(m, increment, y_axis);
+		n = rotate(n, increment, y_axis);
+
+		vec3 nv = vec3(n * x_axis);
+		nxt_vertex.position = vec3(m * x_axis);
+		nxt_vertex.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
+
+		cur_vertex.normal = normalize(cross(normalize(cv - apex), normalize(cv - pv)));
+		nxt_vertex.normal = normalize(cross(normalize(nv - apex), normalize(nv - cv)));
+
+		// Top geometry
+		this->vertices.push_back(VertexAttributesPCN(apex, vec3(1.0f, 0.0f, 0.0f), cur_vertex.normal));
+		this->vertices.push_back(nxt_vertex);
+		this->vertices.push_back(cur_vertex);
+	
+		this->vertex_indices.push_back(this->vertices.size() - 3);
+		this->vertex_indices.push_back(this->vertices.size() - 1);
+		this->vertex_indices.push_back(this->vertices.size() - 2);
+
+		// Top normals just for normal display
+		this->normal_vertices.push_back(VertexAttributesP(apex));
+		this->normal_vertices.push_back(VertexAttributesP(apex + cur_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		this->normal_vertices.push_back(VertexAttributesP(cur_vertex.position));
+		this->normal_vertices.push_back(VertexAttributesP(cur_vertex.position + cur_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		this->normal_vertices.push_back(VertexAttributesP(nxt_vertex.position));
+		this->normal_vertices.push_back(VertexAttributesP(nxt_vertex.position + nxt_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		// Bottom processing
+		cur_vertex.normal = -normalize(cross(normalize(nadir - cv), normalize(pv - cv)));
+		nxt_vertex.normal = -normalize(cross(normalize(nadir - nv), normalize(cv - nv)));
+
+		// Bottom geometry
+		this->vertices.push_back(VertexAttributesPCN(nadir, vec3(1.0f, 0.0f, 0.0f), cur_vertex.normal));
+		this->vertices.push_back(nxt_vertex);
+		this->vertices.push_back(cur_vertex);
+	
+		this->vertex_indices.push_back(this->vertices.size() - 3);
+		this->vertex_indices.push_back(this->vertices.size() - 2);
+		this->vertex_indices.push_back(this->vertices.size() - 1);
+
+		// Bottom normals just for display of normals
+		this->normal_vertices.push_back(VertexAttributesP(nadir));
+		this->normal_vertices.push_back(VertexAttributesP(nadir + cur_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		this->normal_vertices.push_back(VertexAttributesP(cur_vertex.position));
+		this->normal_vertices.push_back(VertexAttributesP(cur_vertex.position + cur_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		this->normal_vertices.push_back(VertexAttributesP(nxt_vertex.position));
+		this->normal_vertices.push_back(VertexAttributesP(nxt_vertex.position + nxt_vertex.normal * normal_scalar));
+		this->normal_indices.push_back(this->normal_vertices.size() - 2);
+		this->normal_indices.push_back(this->normal_vertices.size() - 1);
+
+		prv_point = cur_vertex.position;
+		pv = cv;
+	}
+
+	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
+		return false;
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 2));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 1));
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	if (!this->PostGLInitialize(&this->normal_array_handle, &this->normal_coordinate_handle, this->normal_vertices.size() * sizeof(VertexAttributesP), &this->normal_vertices[0]))
+		return false;
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesP), (GLvoid *) 0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	if (!this->shader.Initialize("top_shader.vert", "top_shader.frag"))
+		return false;
+
+	if (this->GLReturnedError("Background::Initialize - on exit"))
+		return false;
+
+	return true;
+}
+
+void Top::TakeDown()
+{
+	this->vertices.clear();
+	super::TakeDown();
+}
+
+void Top::Draw(const ivec2 & size)
+{
+	assert(false);
+}
+
+void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time)
+{
+	if (this->GLReturnedError("Top::Draw - on entry"))
+		return;
+
+	glEnable(GL_DEPTH_TEST);
+
+	modelview = rotate(modelview, time * 30.0f, vec3(1.0f, 0.0f, 0.0f));
+	modelview = rotate(modelview, 1 * 90.0f, vec3(0.0f, 1.0f, 0.0f));
+	//modelview = scale(modelview, vec3(1.0f, 0.25f, 1.0f));
+	mat4 mvp = projection * modelview;
+	mat3 nm = inverse(transpose(mat3(modelview)));
+
+	shader.Use();
+	shader.CommonSetup(0.0f, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
+	//shader.CustomSetup(this->colors);
+	glViewport(0, 0, size.x, size.y);
+	glBindVertexArray(this->vertex_array_handle);
+	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
+	glUseProgram(0);
+	if (this->draw_normals)
+		this->DrawNormals(projection, modelview, size, time);
+	glBindVertexArray(0);
+
+	if (this->GLReturnedError("Top::Draw - on exit"))
+		return;
+}
