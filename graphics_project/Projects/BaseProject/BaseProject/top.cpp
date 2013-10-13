@@ -65,13 +65,10 @@ bool Top::Initialize(int slices)
 
 	mat4 m;
 
-	const vec3 n = normalize(vec3(0.5f, 1.0f, 0.0f)); // DA FUQ...
+	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f)); // DA FUQ...
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
-	const vec3 apex(0.0f, 0.5f, 0.0f);
-	const vec3 nadir(0.0f, -0.5f, 0.0f);
 	const float increment =  360.0f / float(slices);
-	const vec3 neg_y(1.0f, -1.0f, 1.0f); 
 
 	/*	for each slice:
 			compute top triangle geometry
@@ -82,7 +79,7 @@ bool Top::Initialize(int slices)
 	for (int i = 0; i < slices; ++i)
 	{
 		VertexAttributesPCN v0, v1 , v2, v3;
-		float y_offset = float(i % 2);
+		float y_offset = 1;
 		v0.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
 		v0.color = vec3(this->colors[ColorIndex(i, slices)]);
 		v0.normal = vec3(m * vec4(n, 1.0f));
@@ -108,113 +105,28 @@ bool Top::Initialize(int slices)
 		this->vertices.push_back(v0);
 		this->vertices.push_back(v1);
 		this->vertices.push_back(v2);
+		
+
+
 	
 		this->vertex_indices.push_back(this->vertices.size() - 3);
 		this->vertex_indices.push_back(this->vertices.size() - 2);
 		this->vertex_indices.push_back(this->vertices.size() - 1);
+		//this->vertex_indices.push_back(this->vertices.size() - 4);
 
 		this->BuildNormalVisualizationGeometry();
 
 		// Bottom geometry
 		this->vertices.push_back(v3);
+		
 	
 		this->vertex_indices.push_back(this->vertices.size() - 3);		// Note the winding. Question for reader:
-		this->vertex_indices.push_back(this->vertices.size() - 2);		// Why does this differ from the similar
-		this->vertex_indices.push_back(this->vertices.size() - 1);		// code a few lines above?
+		this->vertex_indices.push_back(this->vertices.size() - 1);		// Why does this differ from the similar
+		this->vertex_indices.push_back(this->vertices.size() - 2);		// code a few lines above?
 
 		this->BuildNormalVisualizationGeometry();
 	}
 
-	/*
-	for (int i = 0; i < slices; ++i)
-	{
-		VertexAttributesPCN cur_vertex , nxt_vertex;
-		cur_vertex.position = vec3(m * x_axis);
-		cur_vertex.color = vec3(this->colors[ColorIndex(i, slices)]);
-		cur_vertex.normal = vec3(m * vec4(n, 1.0f));
-
-		m = rotate(m, increment, y_axis);
-
-		nxt_vertex.position = vec3(m * x_axis);
-		nxt_vertex.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
-		nxt_vertex.normal = vec3(m * vec4(n, 1.0f));
-		
-		// Top geometry
-		this->vertices.push_back(VertexAttributesPCN(apex, vec3(1.0f, 0.0f, 0.0f), normalize(apex)));
-		this->vertices.push_back(nxt_vertex);
-		this->vertices.push_back(cur_vertex);
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);
-		this->vertex_indices.push_back(this->vertices.size() - 1);
-		this->vertex_indices.push_back(this->vertices.size() - 2);
-
-		this->BuildNormalVisualizationGeometry();
-
-		// Bottom geometry
-		this->vertices.push_back(VertexAttributesPCN(nadir, vec3(1.0f, 0.0f, 0.0f), normalize(nadir)));
-		this->vertices.push_back(VertexAttributesPCN(nxt_vertex.position, nxt_vertex.color, nxt_vertex.normal * neg_y));
-		this->vertices.push_back(VertexAttributesPCN(cur_vertex.position, cur_vertex.color, cur_vertex.normal * neg_y));
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);		// Note the winding. Question for reader:
-		this->vertex_indices.push_back(this->vertices.size() - 2);		// Why does this differ from the similar
-		this->vertex_indices.push_back(this->vertices.size() - 1);		// code a few lines above?
-
-		this->BuildNormalVisualizationGeometry();
-	}
-	*/
-
-	/*
-	float angle = 0.0f;
-	float cx [64];
-	float cy [64];
-
-	for (int i = 0; i < 4; i++)
-	{
-		angle = 360 * i / 3;  // Or perhaps 2 * PI * i / 63
-		cx[i] = cos(angle);
-		cy[i] = sin(angle);
-	}
-
-
-	for (int i = 0; i < 4; i++)
-	{
-		VertexAttributesPCN v0, v1, v2, v3;
-		v0.position = vec3(cx[i], cy[i], 0);
-		v0.color = vec3(1.0f, 0.6f, 0.0f);
-		v0.normal = vec3(1.0f);
-		
-		v1.position = vec3(cx[i+1], cy[i+1], 0);
-		v1.color = vec3(1.0f, 0.6f, 0.0f);
-		v1.normal = vec3(1.0f);
-		
-		v2.position = vec3(cx[i], cy[i], 1);
-		v2.color = vec3(1.0f, 0.6f, 0.0f);
-		v2.normal = vec3(1.0f);
-		
-		v3.position = vec3(cx[i+1], cy[i+1], 1);
-		v3.color = vec3(1.0f, 0.6f, 0.0f);
-		v3.normal = vec3(1.0f);
-
-		
-		
-		
-		this->vertices.push_back(VertexAttributesPCN(v0.position, v0.color, v0.normal));
-		this->vertices.push_back(VertexAttributesPCN(v1.position, v1.color, v1.normal));
-		this->vertices.push_back(VertexAttributesPCN(v2.position, v2.color, v2.normal));
-
-		this->vertex_indices.push_back(this->vertices.size() - 3);
-		this->vertex_indices.push_back(this->vertices.size() - 2);
-		this->vertex_indices.push_back(this->vertices.size() - 1);
-
-		this->vertices.push_back(VertexAttributesPCN(v3.position, v3.color, v3.normal));
-
-		this->vertex_indices.push_back(this->vertices.size() - 3);
-		this->vertex_indices.push_back(this->vertices.size() - 1);
-		this->vertex_indices.push_back(this->vertices.size() - 2);
-
-		this->BuildNormalVisualizationGeometry();
-	}
-	*/
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;
@@ -301,7 +213,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 	glEnable(GL_DEPTH_TEST);
 
 	modelview = rotate(modelview, time * 30.0f, vec3(1.0f, 0.0f, 0.0f));
-	//modelview = rotate(modelview, time * 120.0f, vec3(0.0f, 1.0f, 0.0f));
+	modelview = rotate(modelview, time * 120.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
@@ -310,7 +222,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
-	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
+	glDrawElements(GL_TRIANGLE_STRIP , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Top::Draw - after draw");
 	glUseProgram(0);
