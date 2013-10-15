@@ -101,7 +101,7 @@ bool Top::Initialize(int slices)
 		v3.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
 		v3.normal = vec3(m * vec4(n, 1.0f));
 		
-		// Top geometry
+		// Cylinder Geometry
 		this->vertices.push_back(v0);
 		this->vertices.push_back(v1);
 		this->vertices.push_back(v2);

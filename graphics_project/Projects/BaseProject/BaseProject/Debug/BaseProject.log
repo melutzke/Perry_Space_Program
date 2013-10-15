@@ -1,4 +1,4 @@
-﻿Build started 10/14/2013 7:50:44 PM.
+﻿Build started 10/14/2013 8:42:37 PM.
      1>Project "C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include" /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt top.cpp
@@ -18,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.35
+Time Elapsed 00:00:04.46
