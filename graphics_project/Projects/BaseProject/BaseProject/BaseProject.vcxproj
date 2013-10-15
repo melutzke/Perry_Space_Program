@@ -14,6 +14,7 @@
     <ClCompile Include="background.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="meshpack.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="top.cpp" />
@@ -33,6 +34,7 @@
   <ItemGroup>
     <ClInclude Include="background.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="meshpack.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="top.h" />

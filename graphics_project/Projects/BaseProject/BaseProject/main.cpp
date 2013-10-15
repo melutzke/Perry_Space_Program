@@ -13,6 +13,9 @@
 				Switched to timer based redisplay.
 */
 
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include <iostream>
 #include <assert.h>
 #include <vector>
@@ -86,6 +89,7 @@ void CloseFunc()
 	window.window_handle = -1;
 	background.TakeDown();
 	top.TakeDown();
+	_CrtDumpMemoryLeaks();
 }
 
 void ReshapeFunc(int w, int h)

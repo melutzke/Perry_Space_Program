@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include "top.h"
+#include "mesh.h"
 
 using namespace std;
 using namespace glm;
@@ -61,8 +62,6 @@ bool Top::Initialize(int slices)
 	if (slices < 0)
 		slices = 1;
 
-	slices *= 4;
-
 	mat4 m;
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f)); // DA FUQ...
@@ -76,59 +75,13 @@ bool Top::Initialize(int slices)
 			compute bottom triangle geometry
 			compute vectors to visualize normals for bottom triangle (BuildNormalVisualizationGeometry())
 	*/
-	for (int i = 0; i < slices; ++i)
-	{
-		VertexAttributesPCN v0, v1 , v2, v3;
-		float y_offset = 1;
-		v0.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v0.color = vec3(this->colors[ColorIndex(i, slices)]);
-		v0.normal = vec3(m * vec4(n, 1.0f));
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v1.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v1.color = vec3(this->colors[ColorIndex(i, slices)]);
-		v1.normal = vec3(m * vec4(n, 1.0f));
 
-		m = rotate(m, increment, y_axis);
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v2.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v2.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
-		v2.normal = vec3(m * vec4(n, 1.0f));
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v3.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v3.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
-		v3.normal = vec3(m * vec4(n, 1.0f));
-		
-		// Cylinder Geometry
-		this->vertices.push_back(v0);
-		this->vertices.push_back(v1);
-		this->vertices.push_back(v2);
-		
-		
-		
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);
-		this->vertex_indices.push_back(this->vertices.size() - 2);
-		this->vertex_indices.push_back(this->vertices.size() - 1);
+	MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5, 1.0, 0.0));
 
-		
+	this->vertices = New_Cylinder->vertices;
+	this->vertex_indices = New_Cylinder->vertex_indices;
 
-		this->BuildNormalVisualizationGeometry();
-		
-
-		// Bottom geometry
-		this->vertices.push_back(v3);
-		
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);		// Note the winding. Question for reader:
-		this->vertex_indices.push_back(this->vertices.size() - 1);		// Why does this differ from the similar
-		this->vertex_indices.push_back(this->vertices.size() - 2);		// code a few lines above?
-
-		this->BuildNormalVisualizationGeometry();
-		
-	}
+	delete New_Cylinder;
 
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
