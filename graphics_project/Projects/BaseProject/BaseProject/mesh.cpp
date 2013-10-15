@@ -36,7 +36,6 @@ Mesh::~Mesh()
 
 MeshPackage Mesh::Cylinder(int slices, vec3 color)
 {
-
 	if (slices < 0) slices = 1;
 
 	slices *= 4;
@@ -53,58 +52,47 @@ MeshPackage Mesh::Cylinder(int slices, vec3 color)
 		VertexAttributesPCN v0, v1 , v2, v3;
 		float y_offset = 1;
 		v0.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v0.color = vec3(this->colors[ColorIndex(i, slices)]);
+		v0.color = vec3(0.5f, 0.5f, 0.5f);
 		v0.normal = vec3(m * vec4(n, 1.0f));
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v1.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v1.color = vec3(this->colors[ColorIndex(i, slices)]);
+		v1.color = vec3(0.5f, 0.5f, 0.5f);
 		v1.normal = vec3(m * vec4(n, 1.0f));
 
 		m = rotate(m, increment, y_axis);
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v2.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v2.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
+		v2.color = vec3(0.5f, 0.5f, 0.5f);
 		v2.normal = vec3(m * vec4(n, 1.0f));
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v3.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v3.color = vec3(this->colors[1 - ColorIndex(i, slices)]);
+		v3.color = vec3(0.5f, 0.5f, 0.5f);
 		v3.normal = vec3(m * vec4(n, 1.0f));
 		
 		// Cylinder Geometry
-		this->vertices.push_back(v0);
-		this->vertices.push_back(v1);
-		this->vertices.push_back(v2);
-		
-		
-		
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);
-		this->vertex_indices.push_back(this->vertices.size() - 2);
-		this->vertex_indices.push_back(this->vertices.size() - 1);
 
+		vertices.push_back(v0);
+		vertices.push_back(v1);
+		vertices.push_back(v2);
 		
+		vertex_indices.push_back(vertices.size() - 3);
+		vertex_indices.push_back(vertices.size() - 2);
+		vertex_indices.push_back(vertices.size() - 1);
 
 		this->BuildNormalVisualizationGeometry();
 		
-
 		// Bottom geometry
-		this->vertices.push_back(v3);
+		vertices.push_back(v3);
 		
-	
-		this->vertex_indices.push_back(this->vertices.size() - 3);		// Note the winding. Question for reader:
-		this->vertex_indices.push_back(this->vertices.size() - 1);		// Why does this differ from the similar
-		this->vertex_indices.push_back(this->vertices.size() - 2);		// code a few lines above?
+		vertex_indices.push_back(vertices.size() - 3);		// Note the winding. Question for reader:
+		vertex_indices.push_back(vertices.size() - 1);		// Why does this differ from the similar
+		vertex_indices.push_back(vertices.size() - 2);		// code a few lines above?
 
 		this->BuildNormalVisualizationGeometry();
-		
 	}
-
-
-
-
 
 	this->InternalInitialize();
 	return true;
