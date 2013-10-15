@@ -106,15 +106,17 @@ bool Top::Initialize(int slices)
 		this->vertices.push_back(v1);
 		this->vertices.push_back(v2);
 		
-
-
+		
+		
 	
 		this->vertex_indices.push_back(this->vertices.size() - 3);
 		this->vertex_indices.push_back(this->vertices.size() - 2);
 		this->vertex_indices.push_back(this->vertices.size() - 1);
-		//this->vertex_indices.push_back(this->vertices.size() - 4);
+
+		
 
 		this->BuildNormalVisualizationGeometry();
+		
 
 		// Bottom geometry
 		this->vertices.push_back(v3);
@@ -125,6 +127,7 @@ bool Top::Initialize(int slices)
 		this->vertex_indices.push_back(this->vertices.size() - 2);		// code a few lines above?
 
 		this->BuildNormalVisualizationGeometry();
+		
 	}
 
 
@@ -222,7 +225,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
-	glDrawElements(GL_TRIANGLE_STRIP , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
+	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Top::Draw - after draw");
 	glUseProgram(0);
