@@ -62,6 +62,9 @@ bool Top::Initialize(int slices)
 	if (slices < 0)
 		slices = 1;
 
+	this->colors[0] = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	this->colors[1] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+
 	mat4 m;
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f)); // DA FUQ...
@@ -76,10 +79,12 @@ bool Top::Initialize(int slices)
 			compute vectors to visualize normals for bottom triangle (BuildNormalVisualizationGeometry())
 	*/
 
-	MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5, 1.0, 0.0));
+	MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
 
-	this->vertices = New_Cylinder->vertices;
-	this->vertex_indices = New_Cylinder->vertex_indices;
+	this->vertices =		New_Cylinder->vertices;
+	this->vertex_indices =	New_Cylinder->vertex_indices;
+	this->normal_vertices = New_Cylinder->normal_vertices;
+	this->normal_indices =	New_Cylinder->normal_indices;
 
 	delete New_Cylinder;
 
@@ -189,6 +194,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 		this->solid_color.CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
 		glBindVertexArray(this->normal_array_handle);
 		glDrawElements(GL_LINES , this->normal_indices.size(), GL_UNSIGNED_INT , &this->normal_indices[0]);
+		this->GLReturnedError("Top::Draw - after glDrawElements");
 		glBindVertexArray(0);
 		glUseProgram(0);
 	}

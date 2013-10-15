@@ -12,10 +12,6 @@
 				Added solid color shader for drawing normals
 				Switched to timer based redisplay.
 */
-
-#include <stdlib.h>
-#include <crtdbg.h>
-
 #include <iostream>
 #include <assert.h>
 #include <vector>

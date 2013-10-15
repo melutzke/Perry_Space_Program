@@ -34,6 +34,10 @@ Mesh::~Mesh()
 	// nothing to destruct yet
 }
 
+void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAttributesP> normal_indices){
+	
+}
+
 MeshPack* Mesh::Cylinder(int slices, vec3 color)
 {
 	if (slices < 0) slices = 1;
@@ -50,30 +54,31 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 	vector<VertexAttributesPCN> vertices;
 	vector<GLuint> vertex_indices;
 	vector<GLuint> normal_indices;
+	vector<VertexAttributesP> normal_vertices;
 
 	for (int i = 0; i < slices; ++i)
 	{
 		VertexAttributesPCN v0, v1 , v2, v3;
 		float y_offset = 1;
 		v0.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v0.color = vec3(rand() * 0.5f, rand() * 0.5f, rand() * 0.5f);
+		v0.color = color;
 		v0.normal = vec3(m * vec4(n, 1.0f));
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v1.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v1.color = vec3(rand() * 0.5f, rand() * 0.5f, rand() * 0.5f);
+		v1.color = color;
 		v1.normal = vec3(m * vec4(n, 1.0f));
 
 		m = rotate(m, increment, y_axis);
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v2.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v2.color = vec3(rand() * 0.5f, rand() * 0.5f, rand() * 0.5f);
+		v2.color = color;
 		v2.normal = vec3(m * vec4(n, 1.0f));
 		
 		y_offset = (y_offset == 1) ? 0 : 1;
 		v3.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v3.color = vec3(rand() * 0.5f, rand() * 0.5f, rand() * 0.5f);
+		v3.color = color;
 		v3.normal = vec3(m * vec4(n, 1.0f));
 		
 		// Cylinder Geometry
@@ -87,6 +92,14 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 		vertex_indices.push_back(vertices.size() - 1);
 
 		//this->BuildNormalVisualizationGeometry();
+		const float normal_scalar = 0.125f;
+		for (int j = 1; j <= 3; ++j)
+		{
+			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position));
+			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position + vertices[vertices.size() - j].normal * normal_scalar));
+			normal_indices.push_back(normal_vertices.size() - 2);
+			normal_indices.push_back(normal_vertices.size() - 1);
+		}
 		
 		// Bottom geometry
 		vertices.push_back(v3);
@@ -96,9 +109,26 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 		vertex_indices.push_back(vertices.size() - 2);		// code a few lines above?
 
 		//this->BuildNormalVisualizationGeometry();
+		for (int j = 1; j <= 3; ++j)
+		{
+			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position));
+			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position + vertices[vertices.size() - j].normal * normal_scalar));
+			normal_indices.push_back(normal_vertices.size() - 2);
+			normal_indices.push_back(normal_vertices.size() - 1);
+		}
 	}
 
-	return new MeshPack(vertices, vertex_indices, normal_indices);
+	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
+
+	vertices.clear();
+	vertex_indices.clear();
+
+	vertices.shrink_to_fit();
+	vertex_indices.shrink_to_fit();
+
+	
+
+	return newPack;
 }
 
 /*
