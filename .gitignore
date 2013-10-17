@@ -12,3 +12,5 @@
 *.tlog
 *.unsuccessfulbuild
 *.obj
+*.suo
+*.idb

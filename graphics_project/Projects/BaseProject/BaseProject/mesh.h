@@ -23,6 +23,8 @@ public:
 	Mesh();
 	~Mesh();
 	static MeshPack* Cylinder(int slices, glm::vec3 color);
+	static MeshPack* Sphere(float radius, unsigned int rings, unsigned int sectors);
+	static MeshPack* Experimental(float radius, unsigned int rings, unsigned int sectors);
 	//MeshPack Sphere(int stacks, int slices, glm::vec3 color);
 
 private:

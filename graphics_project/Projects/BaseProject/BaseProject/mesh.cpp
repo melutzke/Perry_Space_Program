@@ -13,6 +13,10 @@
 #include <iostream>
 #include <assert.h>
 #include "mesh.h"
+#define _USE_MATH_DEFINES
+#include "math.h"
+
+
 
 using namespace std;
 using namespace glm;
@@ -131,11 +135,96 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 	return newPack;
 }
 
-/*
-MeshPack Mesh::Sphere(int stacks, int slices, vec3 color)
+MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
 {
-	//this->vertex_array_handle = this->vertex_coordinate_handle = GLuint(-1);
-	//this->normal_array_handle = this->normal_coordinate_handle = GLuint(-1);
-	return MeshPack();
+	vector<VertexAttributesPCN> sphere_vertices;
+	vector<GLuint> sphere_indices;
+	vector<VertexAttributesP> sphere_normals;
+	vector<VertexAttributesP> sphere_texcoords;
+	vector<VertexAttributesP> normal_vertices;
+
+    float const R = 1./(float)(rings-1);
+    float const S = 1./(float)(sectors-1);
+    int r, s;
+
+    sphere_vertices.resize(rings * sectors * 3);
+    sphere_normals.resize(rings * sectors * 3);
+    //sphere_texcoords.resize(rings * sectors * 2);
+    std::vector<VertexAttributesPCN>::iterator v = sphere_vertices.begin();
+    std::vector<VertexAttributesP>::iterator n = sphere_normals.begin();
+    //std::vector<VertexAttributesP>::iterator t = sphere_texcoords.begin();
+    for(r = 0; r < rings; r++){
+		for(s = 0; s < sectors; s++) {
+            float const y = sin( -M_PI_2 + M_PI * r * R );
+            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+
+            //*t++ = s*S;
+            //*t++ = r*R;
+
+            *v++ = VertexAttributesPCN(vec3(-x * radius, -y * radius, -z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z)));
+		}
+    }
+
+    sphere_indices.resize(rings * sectors * 4);
+    std:vector<GLuint>::iterator i = sphere_indices.begin();
+    for(r = 0; r < rings; r++) for(s = 0; s < sectors; s++) {
+            *i++ = r * sectors + s;
+            *i++ = r * sectors + (s+1);
+            *i++ = (r+1) * sectors + (s+1);
+            *i++ = (r+1) * sectors + s;
+    }
+
+	MeshPack * newPack = new MeshPack(sphere_vertices, sphere_indices, sphere_indices);
+
+	return newPack;
 }
-*/
+
+MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices)
+{
+	if (slices < 0) slices = 1;
+
+
+	mat4 m = mat4(1.0f);
+
+	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
+	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
+	const vec4 z_axis(0.0f, 0.0f, 1.0f, 1.0f);
+	const vec3 y_axis(0.0f, 1.0f, 0.0f);
+
+	vector<VertexAttributesPCN> vertices;
+	vector<GLuint> vertex_indices;
+	vector<GLuint> normal_indices;
+	vector<VertexAttributesP> normal_vertices;
+
+	float const R = 1./(float)(stacks-1);
+    float const S = 1./(float)(slices-1);
+    int r, s;
+
+	for(r = 0; r < stacks; r++){
+		for(s = 0; s < slices; s++) {
+            float const y = sin( -M_PI_2 + M_PI * r * R );
+            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+
+            vertices.push_back( VertexAttributesPCN(vec3(-x * radius, -y * radius, -z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
+		}
+    }
+
+	for(int i = 0; i < stacks-1; i++){
+		for(int k = 0; k < slices-1; k++){
+			vertex_indices.push_back(k+(i*slices));
+			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+((i+1)*slices));
+
+			vertex_indices.push_back(k+((i+1)*slices));
+			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices)+1);
+		}
+	}
+
+		MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
+		cout << vertices.size();
+
+		return newPack;
+    }

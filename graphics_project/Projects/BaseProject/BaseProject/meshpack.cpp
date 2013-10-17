@@ -17,3 +17,4 @@ MeshPack::MeshPack(vector<VertexAttributesPCN> vertices, vector<GLuint> vertex_i
 	this->normal_indices = normal_indices;
 	//this->texture_coordinate = vec2(0.0f);
 }
+

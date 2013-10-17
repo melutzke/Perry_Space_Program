@@ -79,7 +79,8 @@ bool Top::Initialize(int slices)
 			compute vectors to visualize normals for bottom triangle (BuildNormalVisualizationGeometry())
 	*/
 
-	MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
+	//MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
+	MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices);
 
 	this->vertices =		New_Cylinder->vertices;
 	this->vertex_indices =	New_Cylinder->vertex_indices;
@@ -183,6 +184,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
+	glPointSize(5);
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Top::Draw - after draw");
