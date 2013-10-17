@@ -1,0 +1,14 @@
+## generic files to ignore
+*~
+*.lock
+*.DS_Store
+*.swp
+*.out
+*.exe
+*.ilk
+*.pdb
+*.lastbuildstate
+*.log
+*.tlog
+*.unsuccessfulbuild
+*.obj
