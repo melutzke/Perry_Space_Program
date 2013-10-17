@@ -1,14 +1,8 @@
-﻿Build started 10/15/2013 6:20:45 PM.
+﻿Build started 10/16/2013 6:50:56 PM.
      1>Project "C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include" /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp mesh.cpp object.cpp
-         object.cpp
-         mesh.cpp
-     1>c:\users\mitchell lutzke\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(67): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\mitchell lutzke\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(74): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>c:\users\mitchell lutzke\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(79): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-         main.cpp
-         Generating Code...
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include" /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt top.cpp
+         top.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:"L:\My Documents\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:C:\Users\TEMP\Desktop\Graphics\freeglut\lib /LIBPATH:E:\Graphics\freeglut\lib /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib" /LIBPATH:"C:\Program Files (x86)\Visual Leak Detector\lib\Win32" /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib" freeglut.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.lib" /MACHINE:X86 Debug\background.obj
          Debug\main.obj
@@ -23,4 +17,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.72
+Time Elapsed 00:00:08.57

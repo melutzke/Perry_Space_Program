@@ -142,5 +142,5 @@ vec3 ads( )
 void main()
 {
 	c = color;
-	FragColor = vec4(ads(), 1.0);
+	FragColor = vec4(ads()*ads(), 1.0);
 }
