@@ -1,10 +1,21 @@
-﻿Build started 10/16/2013 6:50:56 PM.
-     1>Project "C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" on node 2 (Build target(s)).
+﻿Build started 10/16/2013 7:23:07 PM.
+     1>Project "C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /I"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include" /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt top.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glew\include /IC:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\freeglut\include /IC:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glm /I"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include" /I"L:\My Documents\Perry_Space_Program\Graphics\glew\include" /IC:\Users\TEMP\Desktop\Graphics\glm /IC:\Users\TEMP\Desktop\Graphics\freeglut\include /IE:\Graphics\freeglut\include /IE:\Graphics\glm /I"C:\Program Files (x86)\Visual Leak Detector\include" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\glm" /I"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt background.cpp main.cpp mesh.cpp meshpack.cpp object.cpp shader.cpp top.cpp vertexattributes.cpp
+         vertexattributes.cpp
          top.cpp
+         shader.cpp
+         object.cpp
+         meshpack.cpp
+         mesh.cpp
+     1>c:\users\stevek917\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(67): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\stevek917\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(74): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>c:\users\stevek917\documents\github\perry_space_program\graphics_project\projects\baseproject\baseproject\mesh.cpp(79): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+         main.cpp
+         background.cpp
+         Generating Code...
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:"L:\My Documents\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:C:\Users\TEMP\Desktop\Graphics\freeglut\lib /LIBPATH:E:\Graphics\freeglut\lib /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib" /LIBPATH:"C:\Program Files (x86)\Visual Leak Detector\lib\Win32" /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib" freeglut.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.lib" /MACHINE:X86 Debug\background.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\freeglut\lib /LIBPATH:C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib /LIBPATH:"C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:"L:\My Documents\Perry_Space_Program\Graphics\glew\lib" /LIBPATH:C:\Users\TEMP\Desktop\Graphics\freeglut\lib /LIBPATH:E:\Graphics\freeglut\lib /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib" /LIBPATH:"C:\Program Files (x86)\Visual Leak Detector\lib\Win32" /LIBPATH:"C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib" freeglut.lib glew32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.lib" /MACHINE:X86 Debug\background.obj
          Debug\main.obj
          Debug\mesh.obj
          Debug\meshpack.obj
@@ -12,9 +23,10 @@
          Debug\shader.obj
          Debug\top.obj
          Debug\vertexattributes.obj
-         BaseProject.vcxproj -> C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe
-     1>Done Building Project "C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" (Build target(s)).
+         LINK : C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe not found or not built by the last incremental link; performing full link
+         BaseProject.vcxproj -> C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\Debug\BaseProject.exe
+     1>Done Building Project "C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\graphics_project\Projects\BaseProject\BaseProject\BaseProject.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:08.57
+Time Elapsed 00:00:16.44

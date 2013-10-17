@@ -83,12 +83,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include;L:\My Documents\Perry_Space_Program\Graphics\glew\include;C:\Users\TEMP\Desktop\Graphics\glm;C:\Users\TEMP\Desktop\Graphics\freeglut\include;E:\Graphics\freeglut\include;E:\Graphics\glm;E:\Graphics\glm;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Users\Mitchell Lutzke\Desktop\graphics\glm;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glew\include;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\freeglut\include;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glm;C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\include;L:\My Documents\Perry_Space_Program\Graphics\glew\include;C:\Users\TEMP\Desktop\Graphics\glm;C:\Users\TEMP\Desktop\Graphics\freeglut\include;E:\Graphics\freeglut\include;E:\Graphics\glm;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Users\Mitchell Lutzke\Desktop\graphics\glm;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib;L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\freeglut\lib;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib;C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib;L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>freeglut.lib;glew32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
