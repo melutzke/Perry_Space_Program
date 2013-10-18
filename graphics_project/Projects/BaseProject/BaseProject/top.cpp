@@ -59,7 +59,7 @@ bool Top::Initialize(int slices)
 	if (!super::Initialize())
 		return false;
 
-	if (slices < 0)
+	if (slices <= 0)
 		slices = 1;
 
 	this->colors[0] = vec4(1.0f, 0.0f, 0.0f, 1.0f);
@@ -84,10 +84,7 @@ bool Top::Initialize(int slices)
 		for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
 			MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
 
-			this->vertices.insert(this->vertices.end(), New_Cylinder->vertices.begin(), New_Cylinder->vertices.end());
-			this->vertex_indices.insert(this->vertex_indices.end(), New_Cylinder->vertex_indices.begin(), New_Cylinder->vertex_indices.end());
-			this->normal_vertices.insert(this->normal_vertices.end(), New_Cylinder->normal_vertices.begin(), New_Cylinder->normal_vertices.end());
-			this->normal_indices.insert(this->normal_indices.end(), New_Cylinder->normal_indices.begin(), New_Cylinder->normal_indices.end());
+			New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 
 			delete New_Cylinder;
 		}

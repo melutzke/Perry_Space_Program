@@ -148,7 +148,7 @@ void SpecialFunc(int c, int x, int y)
 		break;
 
 	case GLUT_KEY_DOWN:
-		if (window.slices > 1)
+		if (window.slices > 4)
 		{
 			--window.slices;
 			top.TakeDown();

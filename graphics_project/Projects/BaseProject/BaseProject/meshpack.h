@@ -27,4 +27,5 @@ public:
 	std::vector<GLuint> vertex_indices;
 	std::vector<VertexAttributesP> normal_vertices;
 	std::vector<GLuint> normal_indices;
+	void addToScene(std::vector<VertexAttributesPCN>& vertices, std::vector<GLuint>& vertex_indices, std::vector<GLuint>& normal_indices);
 };
