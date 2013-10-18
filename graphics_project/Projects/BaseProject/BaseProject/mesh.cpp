@@ -180,12 +180,14 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
 	return newPack;
 }
 
-MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices)
+MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
 {
 	if (slices < 0) slices = 1;
 
 
 	mat4 m = mat4(1.0f);
+
+	m = translate(m, coords);
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
@@ -207,7 +209,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 
-            vertices.push_back( VertexAttributesPCN(vec3(-x * radius, -y * radius, -z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
 		}
     }
 

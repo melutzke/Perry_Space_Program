@@ -71,7 +71,7 @@ bool Top::Initialize(int slices)
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 	const float increment =  360.0f / float(slices);
-
+		
 	/*	for each slice:
 			compute top triangle geometry
 			compute vectors to visualize normals for top triangle (BuildNormalVisualizationGeometry())
@@ -80,15 +80,18 @@ bool Top::Initialize(int slices)
 	*/
 
 	//MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
-	MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices);
+	for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
+		for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
+			MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
 
-	this->vertices =		New_Cylinder->vertices;
-	this->vertex_indices =	New_Cylinder->vertex_indices;
-	this->normal_vertices = New_Cylinder->normal_vertices;
-	this->normal_indices =	New_Cylinder->normal_indices;
+			this->vertices.insert(this->vertices.end(), New_Cylinder->vertices.begin(), New_Cylinder->vertices.end());
+			this->vertex_indices.insert(this->vertex_indices.end(), New_Cylinder->vertex_indices.begin(), New_Cylinder->vertex_indices.end());
+			this->normal_vertices.insert(this->normal_vertices.end(), New_Cylinder->normal_vertices.begin(), New_Cylinder->normal_vertices.end());
+			this->normal_indices.insert(this->normal_indices.end(), New_Cylinder->normal_indices.begin(), New_Cylinder->normal_indices.end());
 
-	delete New_Cylinder;
-
+			delete New_Cylinder;
+		}
+	}
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;
