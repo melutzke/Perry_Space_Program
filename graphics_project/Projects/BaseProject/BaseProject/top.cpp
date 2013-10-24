@@ -84,12 +84,14 @@ bool Top::Initialize(int slices)
 	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
 			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
 
-			/**
+			/*
 			MeshPack * New_Cylinder = Mesh::Experimental(0.8, slices, slices, vec3(0.0f, 0.0f, 0.0f));
 			New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 			delete New_Cylinder;
 			*/
 			
+			
+			// Build main body of spaceship
 			MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
 			New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 			delete New_Sphere;
@@ -103,11 +105,26 @@ bool Top::Initialize(int slices)
 				}
 			}
 			
+			// Build bottom spheres for sihp
 			for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
 				for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
 					MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
 					bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 					delete bot_sphere;
+				}
+			}
+
+			// Build rocket booster cylinders
+			for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+				for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+					MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f));
+					cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+					delete cyl;
+
+					// Fancy fans
+					MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f));
+					cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+					delete cyl2;
 				}
 			}
 

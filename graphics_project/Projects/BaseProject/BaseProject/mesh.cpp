@@ -74,13 +74,16 @@ int Mesh::right (int index, int stacks, int slices) {
 		return index + 1;
 }
 
-MeshPack* Mesh::Cylinder(int slices, vec3 color)
+MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color)
 {
 	if (slices < 0) slices = 1;
 
 	slices *= 4;
 
 	mat4 m;
+	
+	m = translate(m, coords);
+	m = scale(m, scaleVec);
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
@@ -92,6 +95,36 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
 
+	float const R = 1./(float)(stacks-1);
+    float const S = 1./(float)(slices-1);
+    int r, s;
+	
+
+	for(r = 0; r < stacks; r++){
+		for(s = 0; s < slices; s++) {
+
+			float curr_radius = (top_radius - bot_radius)*(r*R) + bot_radius;
+
+            float const y = r * R;
+            float const x = cos(2*M_PI * s * S);
+            float const z = sin(2*M_PI * s * S);
+			
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(-x, -y, -z))) );
+		}
+    }
+
+	for(int i = 0; i < stacks-1; i++){
+		for(int k = 0; k < slices-1; k++){
+			vertex_indices.push_back(k+(i*slices));
+			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+((i+1)*slices));
+
+			vertex_indices.push_back(k+((i+1)*slices));
+			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices)+1);
+		}
+	}
+	/*
 	for (int i = 0; i < slices; ++i)
 	{
 		VertexAttributesPCN v0, v1 , v2, v3;
@@ -153,6 +186,7 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 			normal_indices.push_back(normal_vertices.size() - 1);
 		}
 	}
+	*/
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
 
