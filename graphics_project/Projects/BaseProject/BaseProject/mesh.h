@@ -23,8 +23,9 @@ public:
 	Mesh();
 	~Mesh();
 	static MeshPack* Cylinder(int slices, glm::vec3 color);
-	static MeshPack* Sphere(float radius, unsigned int rings, unsigned int sectors);
+	static MeshPack* Sphere(float radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color);
 	static MeshPack* Experimental(float radius, unsigned int rings, unsigned int sectors, glm::vec3 coords);
+	static glm::vec3 getNormal(std::vector<VertexAttributesPCN> vertices, int i, int stacks, int slices);
 	//MeshPack Sphere(int stacks, int slices, glm::vec3 color);
 
 private:

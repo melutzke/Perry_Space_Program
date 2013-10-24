@@ -83,10 +83,34 @@ bool Top::Initialize(int slices)
 	//for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
 	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
 			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
+
+			/**
 			MeshPack * New_Cylinder = Mesh::Experimental(0.8, slices, slices, vec3(0.0f, 0.0f, 0.0f));
 			New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-
 			delete New_Cylinder;
+			*/
+			
+			MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
+			New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+			delete New_Sphere;
+			
+			// Build top spheres for ship
+			for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+				for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+					MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
+					top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+					delete top_sphere;
+				}
+			}
+			
+			for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+				for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+					MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
+					bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+					delete bot_sphere;
+				}
+			}
+
 	//	}
 	//}
 
@@ -174,8 +198,8 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 
 	glEnable(GL_DEPTH_TEST);
 
-	modelview = rotate(modelview, time * 30.0f, vec3(1.0f, 0.0f, 0.0f));
-	modelview = rotate(modelview, time * 120.0f, vec3(0.0f, 1.0f, 0.0f));
+	//modelview = rotate(modelview, time * 30.0f, vec3(1.0f, 0.0f, 0.0f));
+	//modelview = rotate(modelview, time * 120.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 

@@ -167,8 +167,73 @@ MeshPack* Mesh::Cylinder(int slices, vec3 color)
 	return newPack;
 }
 
-MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
+MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
 {
+
+	if (slices < 0) slices = 1;
+
+
+	mat4 m = mat4(1.0f);
+	
+	m = translate(m, coords);
+	m = scale(m, scaleVec);
+
+	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
+	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
+	const vec4 z_axis(0.0f, 0.0f, 1.0f, 1.0f);
+	const vec3 y_axis(0.0f, 1.0f, 0.0f);
+
+	vector<VertexAttributesPCN> vertices;
+	vector<GLuint> vertex_indices;
+	vector<GLuint> normal_indices;
+	vector<VertexAttributesP> normal_vertices;
+
+	float const R = 1./(float)(stacks-1);
+    float const S = 1./(float)(slices-1);
+    int r, s;
+	
+
+	for(r = 0; r < stacks; r++){
+		for(s = 0; s < slices; s++) {
+
+            float const y = sin( -M_PI_2 + M_PI * r * R );
+            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
+            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+			
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(-x, -y, -z))) );
+		}
+    }
+
+	for(int i = 0; i < stacks-1; i++){
+		for(int k = 0; k < slices-1; k++){
+			vertex_indices.push_back(k+(i*slices));
+			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+((i+1)*slices));
+
+			vertex_indices.push_back(k+((i+1)*slices));
+			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices)+1);
+		}
+	}
+
+	for(int i = slices; i < vertices.size() - slices; i++){
+		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
+		// average them
+		// ???
+		// profit!
+
+		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
+	}
+
+
+
+	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
+	cout << vertices.size();
+
+	return newPack;
+
+	
+	/*
 	vector<VertexAttributesPCN> sphere_vertices;
 	vector<GLuint> sphere_indices;
 	vector<VertexAttributesP> sphere_normals;
@@ -212,6 +277,32 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
 	MeshPack * newPack = new MeshPack(sphere_vertices, sphere_indices, sphere_indices);
 
 	return newPack;
+	*/
+}
+
+
+
+glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN> vertices, int i, int stacks, int slices) {
+	vec3 NewNormal = vec3(0.0f);
+	vec3 myself = vertices[i].position;
+	vec3 v0 = vertices[ right(i, stacks, slices)						].position;
+	vec3 v1 = vertices[ down(right(i, stacks, slices), stacks, slices)	].position;
+	vec3 v2 = vertices[ down(i, stacks, slices)							].position;
+	vec3 v3 = vertices[ left(i, stacks, slices)							].position;
+	vec3 v4 = vertices[ left(up(i, stacks, slices), stacks, slices)		].position;
+	vec3 v5 = vertices[ up(i, stacks, slices)							].position;
+
+	vec3 n0 = cross( (v0 - myself), (v1 - myself) );
+	vec3 n1 = cross( (v2 - myself), (v3 - myself) );
+	vec3 n2 = cross( (v4 - myself), (v5 - myself) );
+
+	vec3 n3 = cross( (v5 - myself), (v0 - myself) );
+	vec3 n4 = cross( (v1 - myself), (v2 - myself) );
+	vec3 n5 = cross( (v3 - myself), (v4 - myself) );
+
+	//blended shading
+	NewNormal = normalize(n0 + n1 + n2 + n3 + n4 + n5);
+	return NewNormal;
 }
 
 MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
@@ -295,27 +386,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 		// ???
 		// profit!
 
-		vec3 NewNormal = vec3(0.0f);
-		vec3 myself = vertices[i].position;
-		vec3 v0 = vertices[ right(i, stacks, slices)						].position;
-		vec3 v1 = vertices[ down(right(i, stacks, slices), stacks, slices)	].position;
-		vec3 v2 = vertices[ down(i, stacks, slices)							].position;
-		vec3 v3 = vertices[ left(i, stacks, slices)							].position;
-		vec3 v4 = vertices[ left(up(i, stacks, slices), stacks, slices)		].position;
-		vec3 v5 = vertices[ up(i, stacks, slices)							].position;
-
-		vec3 n0 = cross( (v0 - myself), (v1 - myself) );
-		vec3 n1 = cross( (v2 - myself), (v3 - myself) );
-		vec3 n2 = cross( (v4 - myself), (v5 - myself) );
-
-		vec3 n3 = cross( (v5 - myself), (v0 - myself) );
-		vec3 n4 = cross( (v1 - myself), (v2 - myself) );
-		vec3 n5 = cross( (v3 - myself), (v4 - myself) );
-
-		//blended shading
-		NewNormal = normalize(n0 + n1 + n2 + n3 + n4 + n5);
-		
-		vertices[i].normal = -NewNormal;
+		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
 	}
 
 

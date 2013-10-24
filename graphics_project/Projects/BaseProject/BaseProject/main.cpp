@@ -34,10 +34,17 @@ public:
 	{
 		this->time_last_pause_began = this->total_time_paused = 0;
 		this->normals = this->wireframe = this->paused = false;
-		this->slices = 4;
+		this->slices = 16;
 		this->interval = 1000 / 120;
 		this->window_handle = -1;
+		this->horizontal_rotation = 0.0f;
+		this->vertical_rotation = 0.0f;
 	}
+
+	
+
+	float horizontal_rotation;
+	float vertical_rotation;
 
 	float time_last_pause_began;
 	float total_time_paused;
@@ -129,7 +136,22 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		}
 		window.paused = !window.paused;
 		break;
-
+	case 'i':
+		if (window.vertical_rotation < 88.5f) {
+			window.vertical_rotation += 1.5f;
+		}
+		break;
+	case 'k':
+		if (window.vertical_rotation > -88.5f) {
+			window.vertical_rotation -= 1.5f;
+		}
+		break;
+	case 'j':
+		window.horizontal_rotation -= 1.5f;
+		break;
+	case 'l':
+		window.horizontal_rotation += 1.5f;
+		break;
 	case 'x':
 	case 27:
 		glutLeaveMainLoop();
@@ -167,8 +189,13 @@ void DisplayFunc()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, window.size.x, window.size.y);
 	background.Draw(window.size);
-	mat4 projection = perspective(25.0f, window.window_aspect, 1.0f, 10.0f);
-	mat4 modelview = lookAt(vec3(0.0f, 0.0f, 5.5f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
+	mat4 projection = perspective(50.0f, window.window_aspect, 1.0f, 20.0f);
+	mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
+	modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
+	modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));
+	
 	// glPolygonMode is NOT modern OpenGL but will be allowed in Projects 2 and 3
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 	top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused);
