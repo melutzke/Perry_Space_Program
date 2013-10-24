@@ -29,6 +29,10 @@ public:
 
 private:
 	void BuildNormalVisualizationGeometry();
+	static int up(int index, int stacks, int slices);
+	static int down(int index, int stacks, int slices);
+	static int left(int index, int stacks, int slices);
+	static int right(int index, int stacks, int slices);
 	glm::vec4 colors[2];
 	std::vector<VertexAttributesPCN> vertices;
 	std::vector<VertexAttributesP> normal_vertices;

@@ -80,15 +80,15 @@ bool Top::Initialize(int slices)
 	*/
 
 	//MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
-	for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
-		for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
-			MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
-
+	//for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
+	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
+			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
+			MeshPack * New_Cylinder = Mesh::Experimental(0.8, slices, slices, vec3(0.0f, 0.0f, 0.0f));
 			New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 
 			delete New_Cylinder;
-		}
-	}
+	//	}
+	//}
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;

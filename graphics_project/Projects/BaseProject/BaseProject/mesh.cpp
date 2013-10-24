@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <assert.h>
+#include <stdlib.h>
 #include "mesh.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
@@ -40,6 +41,35 @@ Mesh::~Mesh()
 
 void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAttributesP> normal_indices){
 	
+}
+
+int Mesh::up (int index, int stacks, int slices) {
+	if (index >= (stacks-1)*slices)
+		// Top row – there IS no 'up'
+		return 0;
+	else
+		return index + slices;
+}
+int Mesh::down (int index, int stacks, int slices) {
+	if (index < slices)
+		// Bottom row – there IS no 'down'
+		return 0;
+	else
+		return index - slices;
+}
+int Mesh::left (int index, int stacks, int slices) {
+	if (index % slices == 0)
+		// Left column – we'll want to wrap to the RIGHT
+		return index + slices - 2;
+	else
+		return index -1;
+}
+int Mesh::right (int index, int stacks, int slices) {
+	if (index < slices)
+		// Right column – we'll want to wrap to the LEFT
+		return index - slices - 2;
+	else
+		return index + 1;
 }
 
 MeshPack* Mesh::Cylinder(int slices, vec3 color)
@@ -143,7 +173,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
 	vector<VertexAttributesP> sphere_texcoords;
 	vector<VertexAttributesP> normal_vertices;
 
-    float const R = 1./(float)(rings-1);
+    float R = 1./(float)(rings-1);
     float const S = 1./(float)(sectors-1);
     int r, s;
 
@@ -155,12 +185,15 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
     //std::vector<VertexAttributesP>::iterator t = sphere_texcoords.begin();
     for(r = 0; r < rings; r++){
 		for(s = 0; s < sectors; s++) {
+			R = 1./(float)(rings-1) * rand();
+			cout << rand() << endl;
             float const y = sin( -M_PI_2 + M_PI * r * R );
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 
             //*t++ = s*S;
             //*t++ = r*R;
+
 
             *v++ = VertexAttributesPCN(vec3(-x * radius, -y * radius, -z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z)));
 		}
@@ -201,15 +234,20 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 
 	float const R = 1./(float)(stacks-1);
     float const S = 1./(float)(slices-1);
+	float const backup_radius = radius;
     int r, s;
+	
 
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
+
             float const y = sin( -M_PI_2 + M_PI * r * R );
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
+			float rand_altitude = float(rand() % 1000) / 25000.0f;
+			vec3 altitude_addition = vec3( rand_altitude ) * normalize(vec3(x, y, z));
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
 		}
     }
 
@@ -225,8 +263,39 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 		}
 	}
 
-		MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
-		cout << vertices.size();
+	for(int i = slices; i < vertices.size() - slices; i++){
+		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
+		// average them
+		// ???
+		// profit!
 
-		return newPack;
-    }
+		vec3 NewNormal = vec3(0.0f);
+		vec3 myself = vertices[i].position;
+		vec3 v0 = vertices[ right(i, stacks, slices)						].position;
+		vec3 v1 = vertices[ down(right(i, stacks, slices), stacks, slices)	].position;
+		vec3 v2 = vertices[ down(i, stacks, slices)							].position;
+		vec3 v3 = vertices[ left(i, stacks, slices)							].position;
+		vec3 v4 = vertices[ left(up(i, stacks, slices), stacks, slices)		].position;
+		vec3 v5 = vertices[ up(i, stacks, slices)							].position;
+
+		vec3 n0 = cross( (v0 - myself), (v1 - myself) );
+		vec3 n1 = cross( (v2 - myself), (v3 - myself) );
+		vec3 n2 = cross( (v4 - myself), (v5 - myself) );
+
+		vec3 n3 = cross( (v5 - myself), (v0 - myself) );
+		vec3 n4 = cross( (v1 - myself), (v2 - myself) );
+		vec3 n5 = cross( (v3 - myself), (v4 - myself) );
+
+		//blended shading
+		NewNormal = normalize(n0 + n1 + n2 + n3 + n4 + n5);
+		
+		vertices[i].normal = -NewNormal;
+	}
+
+
+
+	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
+	cout << vertices.size();
+
+	return newPack;
+}
