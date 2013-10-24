@@ -40,6 +40,9 @@
     <ClInclude Include="top.h" />
     <ClInclude Include="vertexattributes.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="mars.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{949EAF8E-A410-4EAD-8ABC-02D26A557BC2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>

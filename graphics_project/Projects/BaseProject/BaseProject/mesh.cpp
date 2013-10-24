@@ -16,6 +16,8 @@
 #include "mesh.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include <iostream>
+#include <fstream>
 
 
 
@@ -194,8 +196,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
             //*t++ = s*S;
             //*t++ = r*R;
 
-
-            *v++ = VertexAttributesPCN(vec3(-x * radius, -y * radius, -z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z)));
+            *v++ = VertexAttributesPCN(vec3(x * radius, y * radius, z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z)));
 		}
     }
 
@@ -215,6 +216,34 @@ MeshPack * Mesh::Sphere(float radius, unsigned int rings, unsigned int sectors)
 
 MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
 {
+
+	stacks = 180;
+	slices = 360;
+
+	vector<float> vec;
+    ifstream    file("mars.txt");
+	string      line;
+	int counter = 0;
+	if (file)
+	{
+		string token;
+		stringstream iss;
+		while ( getline(file, line) )
+		{
+			iss << line;
+			while ( getline(iss, token, '\t') )
+			{
+				if(counter > 1){
+					//cout << token << endl;
+					vec.push_back(atof(token.c_str()));
+				}
+				counter++;
+			}
+			iss.clear();
+		}
+	}
+
+
 	if (slices < 0) slices = 1;
 
 
@@ -234,7 +263,6 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 
 	float const R = 1./(float)(stacks-1);
     float const S = 1./(float)(slices-1);
-	float const backup_radius = radius;
     int r, s;
 	
 
@@ -244,9 +272,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
             float const y = sin( -M_PI_2 + M_PI * r * R );
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-			float rand_altitude = float(rand() % 1000) / 25000.0f;
-			vec3 altitude_addition = vec3( rand_altitude ) * normalize(vec3(x, y, z));
+			vec3 altitude_addition = vec3(vec[r*stacks+s]* 1/25) * normalize(vec3(x, y, z));
             vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
 		}
     }
