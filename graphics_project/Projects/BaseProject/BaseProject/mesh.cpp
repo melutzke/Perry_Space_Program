@@ -74,14 +74,19 @@ int Mesh::right (int index, int stacks, int slices) {
 		return index + 1;
 }
 
-MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color)
+MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 {
 	if (slices < 0) slices = 1;
-
-	slices *= 4;
-
-	mat4 m;
 	
+	slices *= 4;
+	
+	mat4 m(1.0f);
+	m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));
+
+	if (isWing) {
+		m = rotate(m, -90.0f, vec3(0.0f, 0.0f, 1.0f));
+	}
+
 	m = translate(m, coords);
 	m = scale(m, scaleVec);
 
@@ -124,69 +129,15 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 			vertex_indices.push_back(k+((i+1)*slices)+1);
 		}
 	}
-	/*
-	for (int i = 0; i < slices; ++i)
-	{
-		VertexAttributesPCN v0, v1 , v2, v3;
-		float y_offset = 1;
-		v0.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v0.color = color;
-		v0.normal = vec3(m * vec4(n, 1.0f));
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v1.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v1.color = color;
-		v1.normal = vec3(m * vec4(n, 1.0f));
 
-		m = rotate(m, increment, y_axis);
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v2.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v2.color = color;
-		v2.normal = vec3(m * vec4(n, 1.0f));
-		
-		y_offset = (y_offset == 1) ? 0 : 1;
-		v3.position = vec3(m * x_axis) + vec3(0.0f, y_offset, 0.0f);
-		v3.color = color;
-		v3.normal = vec3(m * vec4(n, 1.0f));
-		
-		// Cylinder Geometry
+	for(int i = slices; i < vertices.size() - slices; i++){
+		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
+		// average them
+		// ???
+		// profit!
 
-		vertices.push_back(v0);
-		vertices.push_back(v1);
-		vertices.push_back(v2);
-		
-		vertex_indices.push_back(vertices.size() - 3);
-		vertex_indices.push_back(vertices.size() - 2);
-		vertex_indices.push_back(vertices.size() - 1);
-
-		//this->BuildNormalVisualizationGeometry();
-		const float normal_scalar = 0.125f;
-		for (int j = 1; j <= 3; ++j)
-		{
-			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position));
-			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position + vertices[vertices.size() - j].normal * normal_scalar));
-			normal_indices.push_back(normal_vertices.size() - 2);
-			normal_indices.push_back(normal_vertices.size() - 1);
-		}
-		
-		// Bottom geometry
-		vertices.push_back(v3);
-		
-		vertex_indices.push_back(vertices.size() - 3);		// Note the winding. Question for reader:
-		vertex_indices.push_back(vertices.size() - 1);		// Why does this differ from the similar
-		vertex_indices.push_back(vertices.size() - 2);		// code a few lines above?
-
-		//this->BuildNormalVisualizationGeometry();
-		for (int j = 1; j <= 3; ++j)
-		{
-			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position));
-			normal_vertices.push_back(VertexAttributesP(vertices[vertices.size() - j].position + vertices[vertices.size() - j].normal * normal_scalar));
-			normal_indices.push_back(normal_vertices.size() - 2);
-			normal_indices.push_back(normal_vertices.size() - 1);
-		}
+		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
 	}
-	*/
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
 

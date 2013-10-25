@@ -137,20 +137,20 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		window.paused = !window.paused;
 		break;
 	case 'i':
-		if (window.vertical_rotation < 88.5f) {
-			window.vertical_rotation += 1.5f;
+		if (window.vertical_rotation < 84.0f) {
+			window.vertical_rotation += 3.0f;
 		}
 		break;
 	case 'k':
-		if (window.vertical_rotation > -88.5f) {
-			window.vertical_rotation -= 1.5f;
+		if (window.vertical_rotation > -84.0f) {
+			window.vertical_rotation -= 3.0f;
 		}
 		break;
 	case 'j':
-		window.horizontal_rotation -= 1.5f;
+		window.horizontal_rotation -= 3.0f;
 		break;
 	case 'l':
-		window.horizontal_rotation += 1.5f;
+		window.horizontal_rotation += 3.0f;
 		break;
 	case 'x':
 	case 27:
