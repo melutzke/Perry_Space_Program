@@ -20,6 +20,7 @@ class Top : public Object
 {
 public:
 	Top();
+	void RenderSpaceship(int slices);
 	bool Initialize(int slices);
 	virtual void Draw(const glm::ivec2 & size);
 	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0);
