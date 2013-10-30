@@ -27,5 +27,9 @@ public:
 	std::vector<GLuint> vertex_indices;
 	std::vector<VertexAttributesP> normal_vertices;
 	std::vector<GLuint> normal_indices;
+	glm::mat4 m;
 	void addToScene(std::vector<VertexAttributesPCN>& vertices, std::vector<GLuint>& vertex_indices, std::vector<GLuint>& normal_indices);
+	void rotate(float degrees, glm::vec3 direction);
+	void translate(glm::vec3 position);
+	void scale(glm::vec3 scale);
 };

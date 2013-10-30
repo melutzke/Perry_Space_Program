@@ -19,7 +19,7 @@
 #include <iostream>
 #include <fstream>
 
-
+#pragma warning(disable: 4996)
 
 using namespace std;
 using namespace glm;
@@ -48,14 +48,14 @@ void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAt
 int Mesh::up (int index, int stacks, int slices) {
 	if (index >= (stacks-1)*slices)
 		// Top row – there IS no 'up'
-		return 0;
+		return index;
 	else
 		return index + slices;
 }
 int Mesh::down (int index, int stacks, int slices) {
 	if (index < slices)
 		// Bottom row – there IS no 'down'
-		return 0;
+		return index;
 	else
 		return index - slices;
 }
@@ -114,7 +114,7 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
             float const x = cos(2*M_PI * s * S);
             float const z = sin(2*M_PI * s * S);
 			
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(-x, -y, -z))) );
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(x, y, z))) );
 		}
     }
 
@@ -213,7 +213,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
-	cout << vertices.size();
+	std::cout << "Generated MeshPack w/ " << vertices.size() << " vertices." << endl;
 
 	return newPack;
 
@@ -267,34 +267,92 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 
 
 
-glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN> vertices, int i, int stacks, int slices) {
+glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN>& vertices, int i, int stacks, int slices) {
 	vec3 NewNormal = vec3(0.0f);
 	vec3 myself = vertices[i].position;
-	vec3 v0 = vertices[ right(i, stacks, slices)						].position;
-	vec3 v1 = vertices[ down(right(i, stacks, slices), stacks, slices)	].position;
-	vec3 v2 = vertices[ down(i, stacks, slices)							].position;
-	vec3 v3 = vertices[ left(i, stacks, slices)							].position;
-	vec3 v4 = vertices[ left(up(i, stacks, slices), stacks, slices)		].position;
-	vec3 v5 = vertices[ up(i, stacks, slices)							].position;
 
-	vec3 n0 = cross( (v0 - myself), (v1 - myself) );
-	vec3 n1 = cross( (v2 - myself), (v3 - myself) );
-	vec3 n2 = cross( (v4 - myself), (v5 - myself) );
+	vec3 v0 = vertices[ right(i, stacks, slices) ].position;
+	vec3 v1 = vertices[ down(right(i, stacks, slices), stacks, slices) ].position;
+	vec3 v2 = vertices[ down(i, stacks, slices) ].position;
+	vec3 v3 = vertices[ left(i, stacks, slices) ].position;
+	vec3 v4 = vertices[ left(up(i, stacks, slices), stacks, slices) ].position;
+	vec3 v5 = vertices[ up(i, stacks, slices) ].position;
 
-	vec3 n3 = cross( (v5 - myself), (v0 - myself) );
-	vec3 n4 = cross( (v1 - myself), (v2 - myself) );
-	vec3 n5 = cross( (v3 - myself), (v4 - myself) );
+	NewNormal += cross( (v0 - myself), (v1 - myself) );
+	NewNormal += cross( (v2 - myself), (v3 - myself) );
+	NewNormal += cross( (v4 - myself), (v5 - myself) );
+
+	//NewNormal += cross( (v5 - myself), (v0 - myself) );
+	//NewNormal += cross( (v1 - myself), (v2 - myself) );
+	//NewNormal += cross( (v3 - myself), (v4 - myself) );
 
 	//blended shading
-	NewNormal = normalize(n0 + n1 + n2 + n3 + n4 + n5);
+	if(NewNormal != vec3(0.0f))
+		NewNormal = normalize(NewNormal);
+	
 	return NewNormal;
+}
+
+
+
+GLuint Mesh::loadBMP_custom(const char * imagepath){
+
+	// Data read from the header of the BMP file
+	unsigned char header[54]; // Each BMP file begins by a 54-bytes header
+	unsigned int dataPos;     // Position in the file where the actual data begins
+	unsigned int width, height;
+	unsigned int imageSize;   // = width*height*3
+	// Actual RGB data
+	unsigned char * data;
+
+	// Open the file
+	FILE * file = fopen(imagepath,"rb");
+	if (!file){
+		printf("Image could not be opened\n"); 
+		return 0;
+	}
+	if ( fread(header, 1, 54, file)!=54 ){ // If not 54 bytes read : problem
+    		printf("Not a correct BMP file\n");
+    		return false;
+	}
+	if ( header[0]!='B' || header[1]!='M' ){
+    		printf("Not a correct BMP file\n");
+    		return 0;
+	}
+	// Read ints from the byte array
+	dataPos    = *(int*)&(header[0x0A]);
+	imageSize  = *(int*)&(header[0x22]);
+	width      = *(int*)&(header[0x12]);
+	height     = *(int*)&(header[0x16]);
+	// Some BMP files are misformatted, guess missing information
+	if (imageSize==0)    imageSize=width*height*3; // 3 : one byte for each Red, Green and Blue component
+	if (dataPos==0)      dataPos=54; // The BMP header is done that way
+	// Create a buffer
+	data = new unsigned char [imageSize];
+ 
+	// Read the actual data from the file into the buffer
+	fread(data,1,imageSize,file);
+ 
+	//Everything is in memory now, the file can be closed
+	fclose(file);
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+ 
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, textureID);
+ 
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+ 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
 MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
 {
 
-	stacks = 180;
-	slices = 360;
+	GLuint Texture = loadBMP_custom("./mars_texture.bmp");
 
 	vector<float> vec;
     ifstream    file("mars.txt");
@@ -310,15 +368,18 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 			while ( getline(iss, token, '\t') )
 			{
 				if(counter > 1){
-					//cout << token << endl;
 					vec.push_back(atof(token.c_str()));
+				} else if(counter == 0){
+					slices = atof(token.c_str());
+				} else if(counter == 1){
+					stacks = atof(token.c_str());
 				}
 				counter++;
 			}
 			iss.clear();
 		}
 	}
-
+	std::cout << "done reading file" << endl;
 
 	if (slices < 0) slices = 1;
 
@@ -341,43 +402,48 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
     float const S = 1./(float)(slices-1);
     int r, s;
 	
-
+	cout << "Generating points" << endl;
+	int counterer = 0;
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
 
             float const y = sin( -M_PI_2 + M_PI * r * R );
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-			vec3 altitude_addition = vec3(vec[r*stacks+s]* 1/25) * normalize(vec3(x, y, z));
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z))) );
+			vec3 altitude_addition = vec3(vec[vec.size()-1-counterer] * 1/6.0f) * normalize(vec3(x, y, z));
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(x, y, z))) );
+			counterer++;
 		}
     }
 
+	cout << "Making indice combinations" << endl;
+
 	for(int i = 0; i < stacks-1; i++){
 		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+(i*slices));
 			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+(i*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices));
 
-			vertex_indices.push_back(k+((i+1)*slices));
 			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices)+1);
 		}
 	}
 
-	for(int i = slices; i < vertices.size() - slices; i++){
-		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
-		// average them
-		// ???
-		// profit!
+	cout << "Creating normals" << endl;
 
-		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
+	for(int i = slices; i < vertices.size() - slices; i++){
+		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
-
+	cout << "About to make mesh pack" << endl;
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
 	cout << vertices.size();
+
+	cout << "Read in " << vec.size() << " altitude points" << endl;
 
 	return newPack;
 }

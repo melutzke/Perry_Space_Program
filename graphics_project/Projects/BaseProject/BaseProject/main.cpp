@@ -24,6 +24,8 @@
 #include "background.h"
 #include "top.h"
 
+
+
 using namespace std;
 using namespace glm;
 
@@ -184,14 +186,20 @@ void DisplayFunc()
 {
 	float current_time = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
 
-	//glEnable(GL_CULL_FACE);
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glEnable( GL_CULL_FACE );
+	glEnable( GL_POINT_SMOOTH );
+    glEnable( GL_BLEND );
+
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, window.size.x, window.size.y);
 	background.Draw(window.size);
 
-	mat4 projection = perspective(50.0f, window.window_aspect, 1.0f, 20.0f);
+	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 20.0f);
 	mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+
+	// EARTH SKIMMING MODE
+	//mat4 modelview = lookAt(vec3(0.0f, 0.0f, 5.3f), vec3(-8.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f));
 
 	modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
 	modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));

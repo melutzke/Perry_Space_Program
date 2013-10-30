@@ -27,6 +27,6 @@ public:
 
 private:
 	glm::vec4 colors[4];
-	std::vector<VertexAttributesP> vertices;
+	std::vector<VertexAttributesPCN> vertices;
 	typedef Object super;
 };

@@ -30,27 +30,34 @@ bool Background::Initialize()
 	if (this->GLReturnedError("Background::Initialize - on entry"))
 		return false;
 
-	this->vertices.push_back(VertexAttributesP(vec3(0.0f, 1.0f, 0.0f)));
-	this->vertices.push_back(VertexAttributesP(vec3(1.0f, 1.0f, 0.0f)));
-	this->vertices.push_back(VertexAttributesP(vec3(1.0f, 0.0f, 0.0f)));
-	this->vertices.push_back(VertexAttributesP(vec3(0.0f, 0.0f, 0.0f)));
+	//this->vertices.push_back(VertexAttributesP(vec3(0.0f, 1.0f, 0.0f)));
+	//this->vertices.push_back(VertexAttributesP(vec3(1.0f, 1.0f, 0.0f)));
+	//this->vertices.push_back(VertexAttributesP(vec3(1.0f, 0.0f, 0.0f)));
+	//this->vertices.push_back(VertexAttributesP(vec3(0.0f, 0.0f, 0.0f)));
 
-	this->vertex_indices.push_back(0);
-	this->vertex_indices.push_back(3);
-	this->vertex_indices.push_back(1);
-	this->vertex_indices.push_back(1);
-	this->vertex_indices.push_back(3);
-	this->vertex_indices.push_back(2);
+	//this->vertex_indices.push_back(0);
+	//this->vertex_indices.push_back(3);
+	//this->vertex_indices.push_back(1);
+	//this->vertex_indices.push_back(1);
+	//this->vertex_indices.push_back(3);
+	//this->vertex_indices.push_back(2);
 
-	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesP), &this->vertices[0]))
+	for(int i = 0; i < 10000; i++){
+		this->vertices.push_back(VertexAttributesPCN(vec3(float(rand()%10000)/1000.0f, float(rand()%10000)/1000.0f, float(rand()%10000)/1000.0f), vec3(1.0f, 1.0f, 1.0f), vec3(0, -1, 0)));
+		this->vertex_indices.push_back(vertex_indices.size());
+	}
+
+	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesP), (GLvoid *) 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	if (!this->shader.Initialize("background_gradient.vert", "background_gradient.frag"))
+	//if (!this->shader.Initialize("background_gradient.vert", "background_gradient.frag"))
+	//	return false;
+	if (!this->shader.Initialize("solid_shader.vert", "solid_shader.frag"))
 		return false;
 
 	if (this->GLReturnedError("Background::Initialize - on exit"))
@@ -78,7 +85,8 @@ void Background::Draw(const ivec2 & size)
 	shader.CustomSetup(this->colors);
 	glViewport(0, 0, size.x, size.y);
 	glBindVertexArray(this->vertex_array_handle);
-	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
+	glPointSize(2.0f);
+	glDrawElements(GL_POINTS , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glUseProgram(0);
 	glBindVertexArray(0);
 

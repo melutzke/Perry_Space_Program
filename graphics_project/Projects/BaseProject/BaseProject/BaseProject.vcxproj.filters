@@ -50,6 +50,8 @@
     <None Include="solid_shader.vert" />
     <None Include="solid_shader.frag" />
     <None Include="glew32.dll" />
+    <None Include="mars_shader.frag" />
+    <None Include="mars_shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="background.h">
@@ -76,5 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="mars.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\..\..\Desktop\mars_texture.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ public:
 	static MeshPack* Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing);
 	static MeshPack* Sphere(float radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color);
 	static MeshPack* Experimental(float radius, unsigned int rings, unsigned int sectors, glm::vec3 coords);
-	static glm::vec3 getNormal(std::vector<VertexAttributesPCN> vertices, int i, int stacks, int slices);
+	static glm::vec3 getNormal(std::vector<VertexAttributesPCN>& vertices, int i, int stacks, int slices);
 	//MeshPack Sphere(int stacks, int slices, glm::vec3 color);
 
 private:
@@ -34,6 +34,8 @@ private:
 	static int down(int index, int stacks, int slices);
 	static int left(int index, int stacks, int slices);
 	static int right(int index, int stacks, int slices);
+	static GLuint loadBMP_custom(const char * imagepath);
+
 	glm::vec4 colors[2];
 	std::vector<VertexAttributesPCN> vertices;
 	std::vector<VertexAttributesP> normal_vertices;
