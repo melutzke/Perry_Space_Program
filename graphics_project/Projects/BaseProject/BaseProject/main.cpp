@@ -21,6 +21,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "background.h"
 #include "top.h"
 
@@ -150,9 +153,11 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		break;
 	case 'j':
 		window.horizontal_rotation -= 3.0f;
+		if(window.horizontal_rotation < 0) window.horizontal_rotation += 360.0f;
 		break;
 	case 'l':
 		window.horizontal_rotation += 3.0f;
+		if(window.horizontal_rotation > 360) window.horizontal_rotation -= 360.0f;
 		break;
 	case 'x':
 	case 27:
@@ -190,22 +195,65 @@ void DisplayFunc()
 	glEnable( GL_POINT_SMOOTH );
     glEnable( GL_BLEND );
 
-	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+	glClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, window.size.x, window.size.y);
-	background.Draw(window.size);
+	
 
-	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 20.0f);
-	mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 100.0f);
+
+
+	//mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+		// camX, camY, camZ solved with a little help from stack overflow
+	// stackoverflow.com/questions/287655/opengl-rotating-a-camera-around-a-point */
+	// solving for the x y and z positions prevents us from having to make a series of awkward euler rotations.
+	//		this also prevents us from having to worry about things such as gimbal lock
+
+	mat4 modelview;
+
+	if(true){
+		float distance = 15.0f;
+
+		float camX = distance * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+
+		// for flying perspective, calculate another set of points, at a lower distance
+
+		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+	} else {
+		float distance1 = 6.0f;
+		float distance2 = 5.0f;
+
+		float camX1 = distance1 * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY1 = distance1 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ1 = -distance1 * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+
+		float camX2 = distance2 * sinf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY2 = distance2 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ2 = -distance2 * cosf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		// for flying perspective, calculate another set of points, at a lower distance
+
+		vec3 eye = vec3(camX1, camY1, camZ1);
+		vec3 target = vec3(camX2, camY2, camZ2);
+
+		modelview = lookAt(eye, target, target);
+	}
+
 
 	// EARTH SKIMMING MODE
-	//mat4 modelview = lookAt(vec3(0.0f, 0.0f, 5.3f), vec3(-8.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f));
-
-	modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
-	modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));
+	//modelview = lookAt(vec3(0.0f, 0.0f, 5.3f), vec3(-8.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f));
+	//modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
+	//modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));
 	
 	// glPolygonMode is NOT modern OpenGL but will be allowed in Projects 2 and 3
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+	
+	if(false){
+		background.Draw(window.size);
+	} else {
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused);
+	}
 	top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	DisplayInstructions();

@@ -266,31 +266,23 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 
 	glEnable(GL_DEPTH_TEST);
 
-	modelview = rotate(modelview, time * 10.0f, vec3(0.0f, 1.0f, 0.0f));
+	//modelview = rotate(modelview, time * 10.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
 	this->shaders[this->shader_index]->Use();
+
+	glViewport(0, 0, size.x, size.y);
+
 	this->GLReturnedError("Top::Draw - after use");
 	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
-	glPointSize(5);
+	glPointSize(0.5f);
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Top::Draw - after draw");
 	glUseProgram(0);
-
-	if (this->draw_normals)
-	{
-		this->solid_color.Use();
-		this->solid_color.CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
-		glBindVertexArray(this->normal_array_handle);
-		glDrawElements(GL_LINES , this->normal_indices.size(), GL_UNSIGNED_INT , &this->normal_indices[0]);
-		this->GLReturnedError("Top::Draw - after glDrawElements");
-		glBindVertexArray(0);
-		glUseProgram(0);
-	}
 
 	if (this->GLReturnedError("Top::Draw - on exit"))
 		return;
