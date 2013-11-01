@@ -238,8 +238,9 @@ void DisplayFunc()
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
-		modelview = rotate(modelview, window.horizontal_rotation, vec3(y_axis));
+		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
@@ -248,8 +249,8 @@ void DisplayFunc()
 		// in view: MARS, STARS
 		// what moves: MARS ROTATES
 		
-		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), vec3(y_axis));
-		modelview = rotate(modelview, window.horizontal_rotation, vec3(y_axis));
+		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), y_axis);
+		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
@@ -310,12 +311,17 @@ void DisplayFunc()
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
+		// This un-does the rotation of Mars, resulting in the ship being drawn in a static
+		// position while the planet spins
 		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, -1.0f, 0.0f));
-		modelview = rotate(modelview, 155.0f, vec3(y_axis));
+		
+		
+		modelview = rotate(modelview, 160.0f, y_axis);				// This is done to get the ship to appear 20 
+																			// degrees 'ahead' of the camera
 
-		modelview = translate(modelview, vec3(0.0f, 0.0f, 5.5f));
-		modelview = rotate(modelview, 90.0f, vec3(0.0f, 0.0f, 1.0f));
-		modelview = scale(modelview, vec3(0.125f));
+		modelview = translate(modelview, vec3(0.0f, 0.0f, 5.5f));			// Moves the ship away from the center of Mars
+		modelview = rotate(modelview, 90.0f, vec3(0.0f, 0.0f, 1.0f));		// Tilts the ship down (and away from camera)
+		modelview = scale(modelview, vec3(0.125f));							// Makes ship appropriately smaller than Mars
 
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
@@ -330,7 +336,7 @@ void DisplayFunc()
 		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
 		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
 
-		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(y_axis));
+		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), y_axis);
 
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
