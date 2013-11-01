@@ -216,7 +216,7 @@ void DisplayFunc()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, window.size.x, window.size.y);
 	
-
+	vec3 y_axis(0.0f, 1.0f, 0.0f);
 	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 
@@ -228,19 +228,33 @@ void DisplayFunc()
 
 	mat4 modelview;
 
-
 	if (window.CameraMode == 1){
 		// just your slowly turning ship
 		// in view: SHIP, STARS
 		// what moves: SHIP ROTATES
+
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(y_axis));
+
+		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 2){
 		// just Mars slowly spinning
 		// in view: MARS, STARS
 		// what moves: MARS ROTATES
 		
-		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
-		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
+		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), vec3(y_axis));
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(y_axis));
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 3){
 		// first person view over mars (NO SHIP)
@@ -263,6 +277,12 @@ void DisplayFunc()
 		vec3 target = vec3(camX2, camY2, camZ2);
 
 		modelview = lookAt(eye, target, target);
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
 	} else if(window.CameraMode == 4) {
 		// first person view over mars w/ SHIP
 		// in view: MARS, SHIP, STARS
@@ -284,6 +304,20 @@ void DisplayFunc()
 		vec3 target = vec3(camX2, camY2, camZ2);
 
 		modelview = lookAt(eye, target, target);
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, -1.0f, 0.0f));
+		modelview = rotate(modelview, 155.0f, vec3(y_axis));
+
+		modelview = translate(modelview, vec3(0.0f, 0.0f, 5.5f));
+		modelview = rotate(modelview, 90.0f, vec3(0.0f, 0.0f, 1.0f));
+		modelview = scale(modelview, vec3(0.125f));
+
+		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 5) {
 		// Nice view of just STAR FIELD
@@ -296,7 +330,12 @@ void DisplayFunc()
 		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
 		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
 
-		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(y_axis));
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+	
 	}
 
 
@@ -306,11 +345,8 @@ void DisplayFunc()
 	//modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));
 	
 	// glPolygonMode is NOT modern OpenGL but will be allowed in Projects 2 and 3
+	/*
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
-
-
-
-
 
 	if (window.CameraMode == 1){
 		// just your slowly turning ship
@@ -318,12 +354,10 @@ void DisplayFunc()
 		// what moves: SHIP ROTATES
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
 		
-		//ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, -1.0f, 0.0f));
+		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 2){
 		// just Mars slowly spinning
@@ -332,6 +366,8 @@ void DisplayFunc()
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 3){
 		// first person view over mars (NO SHIP)
@@ -360,14 +396,14 @@ void DisplayFunc()
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 	}
 
-
 	modelview = rotate(modelview, 180.0f, vec3(1.0f, 0.0f, 0.0f));
 	modelview = rotate(modelview, window.horizontal_rotation-50, vec3(0.0f, 1.0f, 0.0f));
 	modelview = translate(modelview, vec3(5.5f, 0.0f, 0.0f));
 	modelview = scale(modelview, vec3(0.125f));
 	modelview = rotate(modelview, 270.0f, vec3(1.0f, 0.0f, 0.0f));
 		
-		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+	ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+	*/
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	DisplayInstructions();
