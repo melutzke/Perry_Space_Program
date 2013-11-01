@@ -8,6 +8,7 @@ uniform mat4 mvp;
 uniform mat4 modelview_matrix;
 uniform mat3 normal_matrix;
 
+
 flat out vec3 color;
 out vec3 normal;
 out vec3 position;

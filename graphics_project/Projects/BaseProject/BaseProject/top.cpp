@@ -52,85 +52,52 @@ void Top::StepShader()
 }
 
 void Top::RenderSpaceship(int slices) {
-	// Build main body of spaceship
-	MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
-	//New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-	delete New_Sphere;
-	cout << "Finished spaceship body" << endl;
-			
-	// Build top spheres for ship
-	//MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(-2.0f, 0.0f, -2.0f), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
-	MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f), vec3(0.0f, 0.0f, 1.0f));
-	for (int i = 0; i < 4; i++) {
-		top_sphere->translate(vec3(-2.0f, 0.0f, -2.0f));
-		top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-		top_sphere->translate(vec3(2.0f, 0.0f, 2.0f));
-		top_sphere->rotate(90.0f, vec3(0.0f, 1.0f, 0.0f));
-		cout << "added, size is now: " << this->vertices.size() << endl;
-	}
+        // Build main body of spaceship
+        MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
+        New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+        delete New_Sphere;
+                        
+        // Build top spheres for ship
+        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+                        MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
+                        top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete top_sphere;
+                }
+        }
+                        
+        // Build bottom spheres for sihp
+        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+                        MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
+                        bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete bot_sphere;
+                }
+        }
 
+        // Build rocket booster cylinders
+        float rotation = -45.0f;
+                        
+        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
+                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
 
-	delete top_sphere;
-	
-	cout << "Created top spheres for ship" << endl;
-			
-	// Build bottom spheres for sihp
-	
-	//for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
-	//	for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-	//		MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
-	//		bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-	//		delete bot_sphere;
-	//	}
-	//}
-	
+                        MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
+                        cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete cyl;
 
-	cout << "Created bottom spheres for ship" << endl;
+                        // Fancy fans
+                        MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
+                        cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete cyl2;
 
-	
-	// Build rocket booster cylinders
-	/*
-	float rotation = -45.0f;
-			
-	for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
-		
-		
-			
-		for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-		MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-		
-		// Fancy fans
-		MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-		
-		// Wings
-		MeshPack * wing = Mesh::Cylinder(0.5f, 1.0f, slices, slices, vec3(1.5f, 0.5f, 0.0f), vec3(1.5f, 2.5f, 0.5f), vec3(0.0f, 0.0f, 1.0f), rotation, true);
-			cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-			cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-			wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        // Wings
+                        MeshPack * wing = Mesh::Cylinder(0.5f, 1.0f, slices, slices, vec3(1.5f, 0.5f, 0.0f), vec3(1.5f, 2.5f, 0.5f), vec3(0.0f, 0.0f, 1.0f), rotation, true);
+                        wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete wing;
 
-			cyl->translate(vec3(0.0f, 0.0f, 4.0f));
-			cyl2->translate(vec3(0.0f, 0.0f, 4.0f));
-			
-			cyl->rotate(90.0f, vec3(0.0f, 1.0f, 0.0f));
-			cyl2->rotate(90.0f, vec3(0.0f, 1.0f, 0.0f));
-			wing->rotate(90.0f, vec3(0.0f, 1.0f, 0.0f));
-
-			
-
-			
-
-			//rotation += 90.0f;
-			delete cyl;
-		delete cyl2;
-		delete wing;
-		}
-
-		
-	}
-	
-	*/
-
-	cout << "Done rendering full rocket" << endl;
+                        rotation += 90.0f;
+                }
+        }
 }
 
 bool Top::Initialize(int slices)
@@ -166,17 +133,16 @@ bool Top::Initialize(int slices)
 	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
 			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
 
-			
-			MeshPack * New_Cylinder = Mesh::Experimental(5.0, slices, slices, vec3(0.0f, 0.0f, 0.0f));
-			New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-			delete New_Cylinder;
+			//MeshPack * New_Cylinder = Mesh::Experimental(5.0, slices, slices, vec3(0.0f, 0.0f, 0.0f));
+			//New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+			//delete New_Cylinder;
 			
 			
 
 	//	}
 	//}
 	cout << endl << "PRE_RENDERSPACESHIP" << endl;
-	//RenderSpaceship(slices);
+	RenderSpaceship(slices);
 	cout << endl << "POST_RENDER" << endl;
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
@@ -259,7 +225,7 @@ void Top::Draw(const ivec2 & size)
 	bytes.
 */
 
-void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time)
+void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time, const int CameraMode)
 {
 	if (this->GLReturnedError("Top::Draw - on entry"))
 		return;
@@ -275,7 +241,7 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 	glViewport(0, 0, size.x, size.y);
 
 	this->GLReturnedError("Top::Draw - after use");
-	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm));
+	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
 	glPointSize(0.5f);

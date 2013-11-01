@@ -44,6 +44,7 @@ public:
 		this->window_handle = -1;
 		this->horizontal_rotation = 0.0f;
 		this->vertical_rotation = 0.0f;
+		this->CameraMode = 1;
 	}
 
 	
@@ -57,6 +58,7 @@ public:
 	int window_handle;
 	int interval;
 	int slices;
+	int CameraMode;
 	ivec2 size;
 	float window_aspect;
 	vector<string> instructions;
@@ -118,6 +120,16 @@ void KeyboardFunc(unsigned char c, int x, int y)
 	{
 	case 's':
 		top.StepShader();
+		break;
+
+	case '+':
+		window.CameraMode++;
+		if(window.CameraMode > 5) window.CameraMode = 1;
+		break;
+
+	case '-':
+		window.CameraMode--;
+		if(window.CameraMode < 1) window.CameraMode = 5;
 		break;
 
 	case 'n':
@@ -191,16 +203,18 @@ void DisplayFunc()
 {
 	float current_time = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
 
+	if(!window.paused)
+		window.horizontal_rotation += 0.1f;
+
 	glEnable( GL_CULL_FACE );
 	glEnable( GL_POINT_SMOOTH );
     glEnable( GL_BLEND );
 
-	glClearColor(0.005f, 0.005f, 0.005f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, window.size.x, window.size.y);
 	
 
-	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 100.0f);
+	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 
 	//mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
@@ -211,17 +225,25 @@ void DisplayFunc()
 
 	mat4 modelview;
 
-	if(true){
-		float distance = 15.0f;
 
-		float camX = distance * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+	if (window.CameraMode == 1){
+		// just your slowly turning ship
+		// in view: SHIP, STARS
+		// what moves: SHIP ROTATES
 
-		// for flying perspective, calculate another set of points, at a lower distance
+	} else if(window.CameraMode == 2){
+		// just Mars slowly spinning
+		// in view: MARS, STARS
+		// what moves: MARS ROTATES
+		
+		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
 
-		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-	} else {
+	} else if(window.CameraMode == 3){
+		// first person view over mars (NO SHIP)
+		// in view: MARS, STARS
+		// what moves: CAMERA CHANGES POSITION
+
 		float distance1 = 6.0f;
 		float distance2 = 5.0f;
 
@@ -238,6 +260,40 @@ void DisplayFunc()
 		vec3 target = vec3(camX2, camY2, camZ2);
 
 		modelview = lookAt(eye, target, target);
+	} else if(window.CameraMode == 4) {
+		// first person view over mars w/ SHIP
+		// in view: MARS, SHIP, STARS
+		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
+
+		float distance1 = 6.0f;
+		float distance2 = 5.0f;
+
+		float camX1 = distance1 * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY1 = distance1 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ1 = -distance1 * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+
+		float camX2 = distance2 * sinf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY2 = distance2 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ2 = -distance2 * cosf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		// for flying perspective, calculate another set of points, at a lower distance
+
+		vec3 eye = vec3(camX1, camY1, camZ1);
+		vec3 target = vec3(camX2, camY2, camZ2);
+
+		modelview = lookAt(eye, target, target);
+
+	} else if(window.CameraMode == 5) {
+		// Nice view of just STAR FIELD
+		// in view: STARS
+		// what moves: STARS ROTATE
+
+		float distance = 150.0f;
+
+		float camX = distance * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
+		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
+
+		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 	}
 
 
@@ -248,13 +304,50 @@ void DisplayFunc()
 	
 	// glPolygonMode is NOT modern OpenGL but will be allowed in Projects 2 and 3
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
-	
-	if(false){
-		background.Draw(window.size);
-	} else {
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused);
+
+
+
+
+
+	if (window.CameraMode == 1){
+		// just your slowly turning ship
+		// in view: SHIP, STARS
+		// what moves: SHIP ROTATES
+
+		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+	} else if(window.CameraMode == 2){
+		// just Mars slowly spinning
+		// in view: MARS, STARS
+		// what moves: MARS ROTATES
+
+		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+	} else if(window.CameraMode == 3){
+		// first person view over mars (NO SHIP)
+		// in view: MARS, STARS
+		// what moves: CAMERA CHANGES POSITION
+
+		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+	} else if(window.CameraMode == 4) {
+		// first person view over mars w/ SHIP
+		// in view: MARS, SHIP, STARS
+		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
+
+		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+	} else if(window.CameraMode == 5) {
+		// Nice view of just STAR FIELD
+		// in view: STARS
+		// what moves: STARS ROTATE
+
+		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 	}
-	top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	DisplayInstructions();
 	glFlush();
@@ -277,7 +370,7 @@ int main(int argc, char * argv[])
 	glutInitWindowPosition(0, 0);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH);
 
-	window.window_handle = glutCreateWindow("A More Sophisticated Modern Hello World");
+	window.window_handle = glutCreateWindow("Perry Space Program: Mitchell Lutzke - Steve Krejci");
 	glutReshapeFunc(ReshapeFunc);
 	glutCloseFunc(CloseFunc);
 	glutDisplayFunc(DisplayFunc);
@@ -286,15 +379,9 @@ int main(int argc, char * argv[])
 	glutTimerFunc(window.interval, TimerFunc, 0);
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-	window.instructions.push_back("This program is an expanded  'Hello World'");
-	window.instructions.push_back("using modern OpenGL.");
+	window.instructions.push_back("Mitchell Lutzke and Steve Krejci - CS559 - UW-Madison");
 	window.instructions.push_back("");
-	window.instructions.push_back("Perry Kivolowitz - For UW-Madison - CS 559");
-	window.instructions.push_back("");
-	window.instructions.push_back("UP / DN - changes slice count");
-	window.instructions.push_back("n - toggles normals");
 	window.instructions.push_back("p - toggles pause");
-	window.instructions.push_back("s - cycles shaders");
 	window.instructions.push_back("w - toggles wireframe");
 	window.instructions.push_back("x - exits");
 

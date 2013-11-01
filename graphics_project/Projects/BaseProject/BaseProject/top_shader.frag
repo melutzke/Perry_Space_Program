@@ -7,9 +7,10 @@ in vec3 position;
 in vec3 normal;
 
 uniform mat4 modelview_matrix;
+uniform int CameraMode;
 
 const float shininess = 40.0f;
-vec3 light_position = vec3((modelview_matrix) * vec4(0.0, 50.0, -500.0, 1));
+vec3 light_position = (CameraMode != 2) ? vec3((modelview_matrix) * vec4(0.0, 50.0, -500.0, 1)) : vec3(0.0, 50.0, 500.0);
 
 vec3 ads( )
 {

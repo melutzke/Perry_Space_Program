@@ -120,12 +120,14 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 
 	for(int i = 0; i < stacks-1; i++){
 		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+(i*slices));
 			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+(i*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices));
 
-			vertex_indices.push_back(k+((i+1)*slices));
 			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices)+1);
 		}
 	}
@@ -136,7 +138,7 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 		// ???
 		// profit!
 
-		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
+		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
@@ -191,12 +193,14 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 
 	for(int i = 0; i < stacks-1; i++){
 		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+(i*slices));
 			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+(i*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices));
 
-			vertex_indices.push_back(k+((i+1)*slices));
 			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices));
+			
 			vertex_indices.push_back(k+((i+1)*slices)+1);
 		}
 	}
@@ -207,7 +211,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 		// ???
 		// profit!
 
-		vertices[i].normal = -getNormal(vertices, i, stacks, slices);
+		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
 
@@ -441,7 +445,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 	cout << "About to make mesh pack" << endl;
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
-	cout << vertices.size();
+	cout << vertices.size() << " vertices created";
 
 	cout << "Read in " << vec.size() << " altitude points" << endl;
 

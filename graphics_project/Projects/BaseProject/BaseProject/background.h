@@ -21,7 +21,7 @@ public:
 	Background();
 	virtual bool Initialize();
 	virtual void Draw(const glm::ivec2 & size);
-	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0);
+	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0, const int CameraMode = 1);
 	void TakeDown();
 	BackgroundShader shader;
 
