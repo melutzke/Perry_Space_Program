@@ -10,7 +10,7 @@ uniform mat4 modelview_matrix;
 uniform int CameraMode;
 
 const float shininess = 40.0f;
-vec3 light_position = (CameraMode != 2) ? vec3((modelview_matrix) * vec4(0.0, 50.0, -500.0, 1)) : vec3(0.0, 50.0, 500.0);
+vec3 light_position = (CameraMode != 2 && CameraMode != 1) ? vec3((modelview_matrix) * vec4(0.0, 50.0, -500.0, 1)) : vec3(0.0, 50.0, 500.0);
 
 vec3 ads( )
 {
@@ -26,7 +26,7 @@ vec3 ads( )
   float n_dot_pos = max(0.0, dot(n, light_position));
   return color * n_dot_pos / 500 + color * (s_dot_n > 0 ? color * pow(max(dot(r, v), 0.0), shininess) : vec3(0.0)) / 2;
 
-  return color * s_dot_n + (s_dot_n > 0 ? color * pow(max(dot(r, v), 0.0), shininess) : vec3(0.0));
+  return color * s_dot_n + (s_dot_n > 0 ? color * pow(max(dot(r, v), 0.0), shininess): vec3(0.0));
 }
 
 void main()

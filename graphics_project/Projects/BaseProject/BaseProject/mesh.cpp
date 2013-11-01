@@ -67,9 +67,9 @@ int Mesh::left (int index, int stacks, int slices) {
 		return index -1;
 }
 int Mesh::right (int index, int stacks, int slices) {
-	if (index < slices)
+	if (index % slices == slices - 1)
 		// Right column – we'll want to wrap to the LEFT
-		return index - slices - 2;
+		return index - (slices - 2);
 	else
 		return index + 1;
 }
@@ -132,7 +132,7 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 		}
 	}
 
-	for(int i = slices; i < vertices.size() - slices; i++){
+	for(int i = 0; i < vertices.size(); i++){
 		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
 		// average them
 		// ???
@@ -187,7 +187,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 			
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(-x, -y, -z))) );
+            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(x, y, z))) );
 		}
     }
 
@@ -286,9 +286,9 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN>& vertices, int i, int stac
 	NewNormal += cross( (v2 - myself), (v3 - myself) );
 	NewNormal += cross( (v4 - myself), (v5 - myself) );
 
-	NewNormal += cross( (v5 - myself), (v0 - myself) );
-	NewNormal += cross( (v1 - myself), (v2 - myself) );
-	NewNormal += cross( (v3 - myself), (v4 - myself) );
+	//NewNormal += cross( (v5 - myself), (v0 - myself) );
+	//NewNormal += cross( (v1 - myself), (v2 - myself) );
+	//NewNormal += cross( (v3 - myself), (v4 - myself) );
 
 	//blended shading
 	if(NewNormal != vec3(0.0f))
@@ -438,7 +438,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 
 	cout << "Creating normals" << endl;
 
-	for(int i = slices; i < vertices.size() - slices; i++){
+	for(int i = 0; i < vertices.size(); i++){
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 

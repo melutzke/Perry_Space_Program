@@ -40,11 +40,12 @@ public:
 	{
 		this->time_last_pause_began = this->total_time_paused = 0;
 		this->normals = this->wireframe = this->paused = false;
-		this->slices = 16;
+		this->slices = 64;
 		this->interval = 1000 / 120;
 		this->window_handle = -1;
 		this->horizontal_rotation = 0.0f;
 		this->vertical_rotation = 0.0f;
+		this->pan_angle = 0.0f;
 		this->CameraMode = 1;
 	}
 
@@ -52,6 +53,7 @@ public:
 
 	float horizontal_rotation;
 	float vertical_rotation;
+	float pan_angle;
 
 	float time_last_pause_began;
 	float total_time_paused;
@@ -185,19 +187,16 @@ void SpecialFunc(int c, int x, int y)
 {
 	switch (c)
 	{
-	case GLUT_KEY_UP:
-		++window.slices;
-		top.TakeDown();
-		top.Initialize(window.slices);
+	case GLUT_KEY_LEFT:
+		window.pan_angle-=3.0f;
+		if (window.pan_angle < 0.0f)
+			window.pan_angle += 360.0f;
 		break;
 
-	case GLUT_KEY_DOWN:
-		if (window.slices > 4)
-		{
-			--window.slices;
-			top.TakeDown();
-			top.Initialize(window.slices);
-		}
+	case GLUT_KEY_RIGHT:
+		window.pan_angle+=3.0f;
+		if (window.pan_angle > 360.0f)
+			window.pan_angle -= 360.0f;
 		break;
 	}
 }
@@ -210,7 +209,6 @@ void DisplayFunc()
 		window.horizontal_rotation += 0.1f;
 
 	glEnable( GL_CULL_FACE );
-	glEnable( GL_POINT_SMOOTH );
     glEnable( GL_BLEND );
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -250,11 +248,12 @@ void DisplayFunc()
 		// what moves: MARS ROTATES
 		
 		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), y_axis);
-		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
+		
 
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 3){
@@ -278,6 +277,7 @@ void DisplayFunc()
 		vec3 target = vec3(camX2, camY2, camZ2);
 
 		modelview = lookAt(eye, target, target);
+		modelview = rotate(modelview, window.pan_angle, eye);
 
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
@@ -321,10 +321,10 @@ void DisplayFunc()
 
 		modelview = translate(modelview, vec3(0.0f, 0.0f, 5.5f));			// Moves the ship away from the center of Mars
 		modelview = rotate(modelview, 90.0f, vec3(0.0f, 0.0f, 1.0f));		// Tilts the ship down (and away from camera)
-		modelview = scale(modelview, vec3(0.125f));							// Makes ship appropriately smaller than Mars
-
+		modelview = scale(modelview, vec3(0.10f));							// Makes ship appropriately smaller than Mars
+		glDisable( GL_CULL_FACE );
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
+		glEnable( GL_CULL_FACE );
 	} else if(window.CameraMode == 5) {
 		// Nice view of just STAR FIELD
 		// in view: STARS

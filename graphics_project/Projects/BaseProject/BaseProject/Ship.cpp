@@ -57,7 +57,7 @@ void Ship::RenderSpaceship(int slices) {
         New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
         delete New_Sphere;
                         
-        // Build Ship spheres for ship
+        // Build top spheres for ship
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
                         MeshPack * Ship_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
