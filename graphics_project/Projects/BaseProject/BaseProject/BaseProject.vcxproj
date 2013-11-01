@@ -17,6 +17,7 @@
     <ClCompile Include="meshpack.cpp" />
     <ClCompile Include="object.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="Ship.cpp" />
     <ClCompile Include="top.cpp" />
     <ClCompile Include="vertexattributes.cpp" />
   </ItemGroup>
@@ -39,6 +40,7 @@
     <ClInclude Include="meshpack.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="Ship.h" />
     <ClInclude Include="top.h" />
     <ClInclude Include="vertexattributes.h" />
   </ItemGroup>

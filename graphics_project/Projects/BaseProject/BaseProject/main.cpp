@@ -26,6 +26,7 @@
 
 #include "background.h"
 #include "top.h"
+#include "Ship.h"
 
 
 
@@ -66,6 +67,7 @@ public:
 
 Background background;
 Top top;
+Ship ship;
 
 void DisplayInstructions()
 {
@@ -99,6 +101,7 @@ void CloseFunc()
 	window.window_handle = -1;
 	background.TakeDown();
 	top.TakeDown();
+	ship.TakeDown();
 	_CrtDumpMemoryLeaks();
 }
 
@@ -314,14 +317,20 @@ void DisplayFunc()
 		// in view: SHIP, STARS
 		// what moves: SHIP ROTATES
 
-		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
+		
+		//ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, -1.0f, 0.0f));
 
 	} else if(window.CameraMode == 2){
 		// just Mars slowly spinning
 		// in view: MARS, STARS
 		// what moves: MARS ROTATES
 
-		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 3){
@@ -329,7 +338,7 @@ void DisplayFunc()
 		// in view: MARS, STARS
 		// what moves: CAMERA CHANGES POSITION
 
-		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 4) {
@@ -337,16 +346,28 @@ void DisplayFunc()
 		// in view: MARS, SHIP, STARS
 		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
 
-		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
+		
+		//ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 5) {
 		// Nice view of just STAR FIELD
 		// in view: STARS
 		// what moves: STARS ROTATE
 
-		//background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 	}
+
+
+	modelview = rotate(modelview, 180.0f, vec3(1.0f, 0.0f, 0.0f));
+	modelview = rotate(modelview, window.horizontal_rotation-50, vec3(0.0f, 1.0f, 0.0f));
+	modelview = translate(modelview, vec3(5.5f, 0.0f, 0.0f));
+	modelview = scale(modelview, vec3(0.125f));
+	modelview = rotate(modelview, 270.0f, vec3(1.0f, 0.0f, 0.0f));
+		
+		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	DisplayInstructions();
@@ -395,6 +416,9 @@ int main(int argc, char * argv[])
 		return 0;
 
 	if (!top.Initialize(window.slices))
+		return 0;
+
+	if (!ship.Initialize(window.slices))
 		return 0;
 
 	glutMainLoop();

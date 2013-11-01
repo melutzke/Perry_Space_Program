@@ -26,7 +26,6 @@ public:
 	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0, const int CameraMan = 0);
 	void StepShader();
 	void TakeDown();
-	//void DrawNormals(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time);
 	Shader shader;
 	Shader solid_color;
 	Shader stripes_model_space;

@@ -51,54 +51,6 @@ void Top::StepShader()
 	this->shader_index = ++this->shader_index % this->shaders.size();
 }
 
-void Top::RenderSpaceship(int slices) {
-        // Build main body of spaceship
-        MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
-        New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-        delete New_Sphere;
-                        
-        // Build top spheres for ship
-        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
-                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-                        MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
-                        top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete top_sphere;
-                }
-        }
-                        
-        // Build bottom spheres for sihp
-        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
-                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-                        MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
-                        bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete bot_sphere;
-                }
-        }
-
-        // Build rocket booster cylinders
-        float rotation = -45.0f;
-                        
-        for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
-                for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-
-                        MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-                        cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete cyl;
-
-                        // Fancy fans
-                        MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-                        cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete cyl2;
-
-                        // Wings
-                        MeshPack * wing = Mesh::Cylinder(0.5f, 1.0f, slices, slices, vec3(1.5f, 0.5f, 0.0f), vec3(1.5f, 2.5f, 0.5f), vec3(0.0f, 0.0f, 1.0f), rotation, true);
-                        wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete wing;
-
-                        rotation += 90.0f;
-                }
-        }
-}
 
 bool Top::Initialize(int slices)
 {
@@ -116,42 +68,13 @@ bool Top::Initialize(int slices)
 
 	mat4 m;
 
-	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f)); // DA FUQ...
-	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
-	const vec3 y_axis(0.0f, 1.0f, 0.0f);
-	const float increment =  360.0f / float(slices);
-		
-	/*	for each slice:
-			compute top triangle geometry
-			compute vectors to visualize normals for top triangle (BuildNormalVisualizationGeometry())
-			compute bottom triangle geometry
-			compute vectors to visualize normals for bottom triangle (BuildNormalVisualizationGeometry())
-	*/
-
-	//MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
-	//for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
-	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
-			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
-
-			//MeshPack * New_Cylinder = Mesh::Experimental(5.0, slices, slices, vec3(0.0f, 0.0f, 0.0f));
-			//New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-			//delete New_Cylinder;
+	MeshPack * New_Cylinder = Mesh::Experimental(5.0, slices, slices, vec3(0.0f, 0.0f, 0.0f));
+	New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+	delete New_Cylinder;
 			
-			
-
-	//	}
-	//}
-	cout << endl << "PRE_RENDERSPACESHIP" << endl;
-	RenderSpaceship(slices);
-	cout << endl << "POST_RENDER" << endl;
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;
-
-	/*	The VertexAttributesPCN class stores vertex attributes: position, color and normal in that order.
-
-		Vertex attributes are stored in an interleaved manner aiding speed of vertex processing.
-	*/
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
@@ -176,14 +99,6 @@ bool Top::Initialize(int slices)
 	if (!this->shader.Initialize("top_shader.vert", "top_shader.frag"))
 		return false;
 
-	//if (!this->shader.Initialize("mars_shader.vert", "mars_shader.frag"))
-	//	return false;
-
-	//if (!this->solid_color.Initialize("solid_shader.vert", "solid_shader.frag"))
-	//	return false;
-
-	//if (!this->stripes_model_space.Initialize("stripe_model_space.vert", "stripe_model_space.frag"))
-	//	return false;
 
 	this->shaders.push_back(&this->shader);
 	this->shaders.push_back(&this->solid_color);

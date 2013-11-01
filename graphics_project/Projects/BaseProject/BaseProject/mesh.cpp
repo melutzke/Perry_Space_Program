@@ -286,9 +286,9 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN>& vertices, int i, int stac
 	NewNormal += cross( (v2 - myself), (v3 - myself) );
 	NewNormal += cross( (v4 - myself), (v5 - myself) );
 
-	//NewNormal += cross( (v5 - myself), (v0 - myself) );
-	//NewNormal += cross( (v1 - myself), (v2 - myself) );
-	//NewNormal += cross( (v3 - myself), (v4 - myself) );
+	NewNormal += cross( (v5 - myself), (v0 - myself) );
+	NewNormal += cross( (v1 - myself), (v2 - myself) );
+	NewNormal += cross( (v3 - myself), (v4 - myself) );
 
 	//blended shading
 	if(NewNormal != vec3(0.0f))
