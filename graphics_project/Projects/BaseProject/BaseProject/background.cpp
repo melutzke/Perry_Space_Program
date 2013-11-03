@@ -33,13 +33,6 @@ bool Background::Initialize()
 	if (this->GLReturnedError("Background::Initialize - on entry"))
 		return false;
 
-	/*vec3(
-					float(rand()%10000)/100.0f-50.0f, 
-					float(rand()%10000)/100.0f-50.0f, 
-					float(rand()%10000)/100.0f-50.0f
-				),*/
-
-
 	while(this->vertices.size() < 10000){
 		// http://hbfs.wordpress.com/2010/10/12/random-points-on-a-sphere-generating-random-sequences-iii/
 		// generating random points on a sphere
@@ -48,8 +41,8 @@ bool Background::Initialize()
 		float theta, phi;
 		const float pRadius = rand() % 5000 / 100.0f + 50;
 
-		theta = 2*M_PI*(rand()%1000/1000.0f);
-		phi = acos(2*(rand()%1000/1000.0f)-1.0);
+		theta = float(2*M_PI*(rand()%1000/1000.0f));
+		phi = acos(2*(rand()%1000/1000.0f)-1.0f);
 
 		pX = pRadius * cos(theta) * sin(phi);
 		pY = pRadius * sin(theta) * sin(phi);
@@ -59,7 +52,7 @@ bool Background::Initialize()
 		VertexAttributesPCN newPoint = VertexAttributesPCN(
 			vec3( pX, pY, pZ ), 
 			vec3( float(rand()%1000)/1000.0f ), 
-			vec3(0, 0, -1)
+			vec3( 0, 0, -1 )
 		);
 
 
@@ -79,8 +72,6 @@ bool Background::Initialize()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	//if (!this->shader.Initialize("background_gradient.vert", "background_gradient.frag"))
-	//	return false;
 	if (!this->shader.Initialize("solid_shader.vert", "solid_shader.frag"))
 		return false;
 
@@ -114,7 +105,7 @@ void Background::Draw(const mat4 & projection, mat4 modelview, const ivec2 & siz
 	shader.CustomSetup(this->colors);
 	glViewport(0, 0, size.x, size.y);
 	glBindVertexArray(this->vertex_array_handle);
-	glPointSize(0.01);
+	glPointSize(0.01f);
 	glDrawElements(GL_POINTS , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glUseProgram(0);
 	glBindVertexArray(0);
