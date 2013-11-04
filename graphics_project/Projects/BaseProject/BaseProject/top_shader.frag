@@ -14,7 +14,7 @@ uniform sampler2D diffuse_mat;
 // vec3 diffuse = intensity *  texture2D(diffuse_mat, coord).rgb;
 
 const float shininess = 40.0f;
-vec3 light_position = (CameraMode != 2 && CameraMode != 1) ? vec3((modelview_matrix) * vec4(200, 50.0, -100.0, 1)) : vec3(200, 50.0, 200.0);
+vec3 light_position = (CameraMode != 2 && CameraMode != 1 && CameraMode != 0) ? vec3((modelview_matrix) * vec4(200, 50.0, -100.0, 1)) : vec3(200, 50.0, 200.0);
 
 vec3 ads( )
 {

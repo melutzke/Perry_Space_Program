@@ -77,8 +77,7 @@ int Mesh::right (int index, int stacks, int slices) {
 MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 {
 	if (slices < 0) slices = 1;
-	
-	slices *= 4;
+
 	
 	mat4 m(1.0f);
 	m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));

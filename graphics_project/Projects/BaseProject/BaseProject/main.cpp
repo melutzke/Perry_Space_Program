@@ -41,14 +41,14 @@ public:
 	Window()
 	{
 		this->time_last_pause_began = this->total_time_paused = 0;
-		this->normals = this->wireframe = this->paused = false;
-		this->slices = 64;
+		this->normals = this->wireframe = this->paused = this->tie_attack = false;
+		this->slices = 24;
 		this->interval = 1000 / 120;
 		this->window_handle = -1;
 		this->horizontal_rotation = 0.0f;
 		this->vertical_rotation = 0.0f;
 		this->pan_angle = 0.0f;
-		this->CameraMode = 1;
+		this->CameraMode = 0;
 	}
 
 	
@@ -57,9 +57,11 @@ public:
 	float vertical_rotation;
 	float pan_angle;
 
+	static const int NUM_SATELLITES = 50;
+
 	float time_last_pause_began;
 	float total_time_paused;
-	bool paused , wireframe, normals;
+	bool paused , wireframe, normals, tie_attack;
 	int window_handle;
 	int interval;
 	int slices;
@@ -67,11 +69,16 @@ public:
 	ivec2 size;
 	float window_aspect;
 	vector<string> instructions;
+	vector<float> satellite_x_rotations;
+	vector<float> satellite_z_rotations;
+	vector<float> satellite_altitudes;
+	vector<float> satellite_speeds;
 } window;
 
 Background background;
 Top top;
 Ship ship;
+Ship satellite;
 
 void DisplayInstructions()
 {
@@ -106,6 +113,7 @@ void CloseFunc()
 	background.TakeDown();
 	top.TakeDown();
 	ship.TakeDown();
+	satellite.TakeDown();
 	_CrtDumpMemoryLeaks();
 }
 
@@ -131,12 +139,12 @@ void KeyboardFunc(unsigned char c, int x, int y)
 
 	case '+':
 		window.CameraMode++;
-		if(window.CameraMode > 5) window.CameraMode = 1;
+		if(window.CameraMode > 5) window.CameraMode = 0;
 		break;
 
 	case '-':
 		window.CameraMode--;
-		if(window.CameraMode < 1) window.CameraMode = 5;
+		if(window.CameraMode < 0) window.CameraMode = 5;
 		break;
 
 	case 'n':
@@ -177,6 +185,9 @@ void KeyboardFunc(unsigned char c, int x, int y)
 	case 'l':
 		window.horizontal_rotation += 3.0f;
 		if(window.horizontal_rotation > 360) window.horizontal_rotation -= 360.0f;
+		break;
+	case 'e':
+		window.tie_attack = !window.tie_attack;
 		break;
 	case 'x':
 	case 27:
@@ -226,8 +237,23 @@ void DisplayFunc()
 	//		this also prevents us from having to worry about things such as gimbal lock
 
 	mat4 modelview;
+	if (window.CameraMode == 0) {
+		// just your slowly turning satellite
+		// in view: satellite, STARS
+		// what moves: SATELLITE ROTATES
 
-	if (window.CameraMode == 1){
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
+
+		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		
+		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
+		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
+
+		satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+
+	} else if (window.CameraMode == 1){
 		// just your slowly turning ship
 		// in view: SHIP, STARS
 		// what moves: SHIP ROTATES
@@ -249,14 +275,34 @@ void DisplayFunc()
 		// what moves: MARS ROTATES
 		
 		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), y_axis);
-		
+
+		if(window.tie_attack)
+			projection = perspective(75.0f, window.window_aspect, 0.1f, 1000.0f);
+		else
+			projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		
+		if (window.tie_attack) {
+			mat4 temp = modelview;
 
+			for (int i = 0; i < window.NUM_SATELLITES; i++) {
+				modelview = temp;
+			
+				modelview = rotate(modelview, window.satellite_x_rotations[i], vec3(1.0f, 0.0f, 0.0f));
+				modelview = rotate(modelview, window.satellite_z_rotations[i], vec3(0.0f, 0.0f, 1.0f));
+				modelview = rotate(modelview, window.satellite_speeds[i]*window.horizontal_rotation, y_axis);
+
+				modelview = translate(modelview, vec3(0.0f, 0.0f, 6.0f + window.satellite_altitudes[i]));
+				modelview = rotate(modelview, 90.0f, y_axis);
+				modelview = scale(modelview, vec3(0.05f));
+				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+			}
+		}
 	} else if(window.CameraMode == 3){
 		// first person view over mars (NO SHIP)
 		// in view: MARS, STARS
@@ -285,6 +331,22 @@ void DisplayFunc()
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
+		if (window.tie_attack) {
+			mat4 temp = modelview;
+
+			for (int i = 0; i < window.NUM_SATELLITES; i++) {
+				modelview = temp;
+			
+				modelview = rotate(modelview, window.satellite_x_rotations[i], vec3(1.0f, 0.0f, 0.0f));
+				modelview = rotate(modelview, window.satellite_z_rotations[i], vec3(0.0f, 0.0f, 1.0f));
+				modelview = rotate(modelview, window.satellite_speeds[i]*window.horizontal_rotation, y_axis);
+
+				modelview = translate(modelview, vec3(0.0f, 0.0f, 6.0f + window.satellite_altitudes[i]));
+				modelview = rotate(modelview, 90.0f, y_axis);
+				modelview = scale(modelview, vec3(0.1));
+				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+			}
+		}
 	} else if(window.CameraMode == 4) {
 		// first person view over mars w/ SHIP
 		// in view: MARS, SHIP, STARS
@@ -429,6 +491,18 @@ void TimerFunc(int value)
 
 int main(int argc, char * argv[])
 {
+	for (int i = 0; i < window.NUM_SATELLITES; i++) {
+		// Generates random changes in altitude from 0 to 5
+		window.satellite_altitudes.push_back(float((rand() % 1000 + 1) / 200));
+		
+		// Generates random changes in direction between 0 and 359
+		window.satellite_x_rotations.push_back(float(rand() % 360));
+		window.satellite_z_rotations.push_back(float(rand() % 360));
+
+		// Generates random speed factor from 2.75 to 5.75
+		window.satellite_speeds.push_back(float((rand() % 30)/10 + 2.75f));
+	}
+
 	glutInit(&argc, argv);
 	glutInitWindowSize(1024, 512);
 	glutInitWindowPosition(0, 0);
@@ -445,6 +519,8 @@ int main(int argc, char * argv[])
 
 	window.instructions.push_back("Mitchell Lutzke and Steve Krejci - CS559 - UW-Madison");
 	window.instructions.push_back("");
+	window.instructions.push_back("[On Mars overview] e - enable TIE fighter invasion");
+	window.instructions.push_back("[On Mars flyover] Left arrow / Right arrow - pan camera");
 	window.instructions.push_back("p - toggles pause");
 	window.instructions.push_back("w - toggles wireframe");
 	window.instructions.push_back("x - exits");
@@ -466,7 +542,10 @@ int main(int argc, char * argv[])
 	if (!top.Initialize(window.slices))
 		return 0;
 
-	if (!ship.Initialize(window.slices))
+	if (!ship.Initialize(window.slices, true))
+		return 0;
+
+	if (!satellite.Initialize(window.slices, false))
 		return 0;
 
 	glutMainLoop();
