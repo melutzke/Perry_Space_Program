@@ -21,6 +21,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "ilcontainer.h"
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -218,7 +220,6 @@ void DisplayFunc()
 	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 
-	//mat4 modelview = lookAt(vec3(0.0f, 0.0f, 10.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 		// camX, camY, camZ solved with a little help from stack overflow
 	// stackoverflow.com/questions/287655/opengl-rotating-a-camera-around-a-point */
 	// solving for the x y and z positions prevents us from having to make a series of awkward euler rotations.
@@ -453,6 +454,11 @@ int main(int argc, char * argv[])
 		cerr << "GLEW failed to initialize." << endl;
 		return 0;
 	}
+
+	ilInit();
+	iluInit();
+	ilutInit();
+	ilutRenderer(ILUT_OPENGL);
 
 	if (!background.Initialize())
 		return 0;

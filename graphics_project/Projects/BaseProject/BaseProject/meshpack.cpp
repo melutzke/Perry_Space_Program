@@ -10,7 +10,7 @@
 using namespace std;
 using namespace glm;
 
-MeshPack::MeshPack(vector<VertexAttributesPCN> vertices, vector<GLuint> vertex_indices, vector<GLuint> normal_indices)
+MeshPack::MeshPack(vector<VertexAttributesPCNT> vertices, vector<GLuint> vertex_indices, vector<GLuint> normal_indices)
 {
 	this->vertices = vertices;
 	this->vertex_indices = vertex_indices;
@@ -18,9 +18,9 @@ MeshPack::MeshPack(vector<VertexAttributesPCN> vertices, vector<GLuint> vertex_i
 	this->m = mat4(1.0f);
 }
 
-void MeshPack::addToScene(vector<VertexAttributesPCN>& arg_vertices, vector<GLuint>& arg_vertex_indices, vector<GLuint>& arg_normal_indices){
+void MeshPack::addToScene(vector<VertexAttributesPCNT>& arg_vertices, vector<GLuint>& arg_vertex_indices, vector<GLuint>& arg_normal_indices){
 
-	vector<VertexAttributesPCN> temp_vertices;
+	vector<VertexAttributesPCNT> temp_vertices;
 
 	for(int i = 0; i < this->vertices.size(); i++){
 		temp_vertices.push_back(this->vertices[i]);

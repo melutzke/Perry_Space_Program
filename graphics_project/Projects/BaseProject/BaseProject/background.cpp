@@ -49,10 +49,11 @@ bool Background::Initialize()
 		pZ = pRadius * cos(phi);
 
 
-		VertexAttributesPCN newPoint = VertexAttributesPCN(
+		VertexAttributesPCNT newPoint = VertexAttributesPCNT(
 			vec3( pX, pY, pZ ), 
 			vec3( float(rand()%1000)/1000.0f ), 
-			vec3( 0, 0, -1 )
+			vec3( 0, 0, -1 ),
+			vec2( 0, 0)
 		);
 
 
@@ -62,11 +63,11 @@ bool Background::Initialize()
 		this->vertex_indices.push_back(vertex_indices.size());
 	}
 
-	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
+	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 1));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 1));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

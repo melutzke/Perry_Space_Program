@@ -15,6 +15,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "object.h"
 #include "shader.h"
+#include "ilcontainer.h"
 
 class Top : public Object
 {
@@ -30,11 +31,12 @@ public:
 	Shader solid_color;
 	Shader stripes_model_space;
 	std::vector<Shader *> shaders;
+	ILContainer texture;
 
 private:
 	void BuildNormalVisualizationGeometry();
 	glm::vec4 colors[2];
-	std::vector<VertexAttributesPCN> vertices;
+	std::vector<VertexAttributesPCNT> vertices;
 	typedef Object super;
 	int shader_index;
 };

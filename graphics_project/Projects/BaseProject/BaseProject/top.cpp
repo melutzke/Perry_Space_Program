@@ -11,6 +11,7 @@
 #include <iostream>
 #include "top.h"
 #include "mesh.h"
+#include "ilcontainer.h"
 
 using namespace std;
 using namespace glm;
@@ -22,6 +23,7 @@ Top::Top() : Object()
 	this->colors[0] = darker_color;
 	this->colors[1] = lighter_color;
 	this->shader_index = 0;
+	this->texture;
 }
 
 inline int ColorIndex(int i, int slices)
@@ -73,15 +75,24 @@ bool Top::Initialize(int slices)
 	delete New_Cylinder;
 			
 
-	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
+	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 1));	// Same
+	
+
+	this->texture = ILContainer();
+	if( ! this->texture.Initialize("mars_full_res.jpg") ) assert(false);
+		
+	
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 1));	// Same
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 3));
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -101,8 +112,6 @@ bool Top::Initialize(int slices)
 
 
 	this->shaders.push_back(&this->shader);
-	this->shaders.push_back(&this->solid_color);
-	this->shaders.push_back(&this->stripes_model_space);
 
 	if (this->GLReturnedError("Background::Initialize - on exit"))
 		return false;
@@ -144,26 +153,33 @@ void Top::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, cons
 {
 	if (this->GLReturnedError("Top::Draw - on entry"))
 		return;
-
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
+
+	this->texture.Bind();
+	this->texture.il_texture_handle;
 
 	//modelview = rotate(modelview, time * 10.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
-	this->shaders[this->shader_index]->Use();
+	this->shaders[0]->Use();
 
 	glViewport(0, 0, size.x, size.y);
 
 	this->GLReturnedError("Top::Draw - after use");
-	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
+	this->shaders[0]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
 	this->GLReturnedError("Top::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
 	glPointSize(0.5f);
+	
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Top::Draw - after draw");
 	glUseProgram(0);
+	
+
+	glDisable(GL_TEXTURE_2D);
 
 	if (this->GLReturnedError("Top::Draw - on exit"))
 		return;

@@ -58,7 +58,7 @@ void Shader::CommonSetup(const float time, const GLint * size, const GLfloat * p
 	this->GLReturnedError("Top::Draw - after normal_matrix_handle");
 	if (this->camera_mode_handle != BAD_GL_VALUE)
 		glUniform1i(this->camera_mode_handle, CameraMode);
-	this->GLReturnedError("Top::Draw - after normal_matrix_handle");
+	this->GLReturnedError("Top::Draw - after CameraMode");
 }
 
 void Shader::Use()

@@ -95,7 +95,7 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 	const float increment =  360.0f / float(slices);
 
-	vector<VertexAttributesPCN> vertices;
+	vector<VertexAttributesPCNT> vertices;
 	vector<GLuint> vertex_indices;
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
@@ -113,8 +113,8 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
             float const y = r * R;
             float const x = cos(2*M_PI * s * S);
             float const z = sin(2*M_PI * s * S);
-			
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(x, y, z))) );
+
+            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(x, y, z)), vec2(0.0f) ));
 		}
     }
 
@@ -170,7 +170,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 	const vec4 z_axis(0.0f, 0.0f, 1.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 
-	vector<VertexAttributesPCN> vertices;
+	vector<VertexAttributesPCNT> vertices;
 	vector<GLuint> vertex_indices;
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
@@ -187,7 +187,7 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 			
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(x, y, z))) );
+            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(x, y, z)), vec2(0.0f) ));
 		}
     }
 
@@ -221,57 +221,11 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 
 	return newPack;
 
-	
-	/*
-	vector<VertexAttributesPCN> sphere_vertices;
-	vector<GLuint> sphere_indices;
-	vector<VertexAttributesP> sphere_normals;
-	vector<VertexAttributesP> sphere_texcoords;
-	vector<VertexAttributesP> normal_vertices;
-
-    float R = 1./(float)(rings-1);
-    float const S = 1./(float)(sectors-1);
-    int r, s;
-
-    sphere_vertices.resize(rings * sectors * 3);
-    sphere_normals.resize(rings * sectors * 3);
-    //sphere_texcoords.resize(rings * sectors * 2);
-    std::vector<VertexAttributesPCN>::iterator v = sphere_vertices.begin();
-    std::vector<VertexAttributesP>::iterator n = sphere_normals.begin();
-    //std::vector<VertexAttributesP>::iterator t = sphere_texcoords.begin();
-    for(r = 0; r < rings; r++){
-		for(s = 0; s < sectors; s++) {
-			R = 1./(float)(rings-1) * rand();
-			cout << rand() << endl;
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-
-            //*t++ = s*S;
-            //*t++ = r*R;
-
-            *v++ = VertexAttributesPCN(vec3(x * radius, y * radius, z * radius), vec3(1, 0.5, 0), normalize(vec3(-x, -y, -z)));
-		}
-    }
-
-    sphere_indices.resize(rings * sectors * 4);
-    std:vector<GLuint>::iterator i = sphere_indices.begin();
-    for(r = 0; r < rings; r++) for(s = 0; s < sectors; s++) {
-            *i++ = r * sectors + s;
-            *i++ = r * sectors + (s+1);
-            *i++ = (r+1) * sectors + (s+1);
-            *i++ = (r+1) * sectors + s;
-    }
-
-	MeshPack * newPack = new MeshPack(sphere_vertices, sphere_indices, sphere_indices);
-
-	return newPack;
-	*/
 }
 
 
 
-glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN>& vertices, int i, int stacks, int slices) {
+glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int stacks, int slices) {
 	vec3 NewNormal = vec3(0.0f);
 	vec3 myself = vertices[i].position;
 
@@ -297,66 +251,9 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCN>& vertices, int i, int stac
 	return NewNormal;
 }
 
-
-
-GLuint Mesh::loadBMP_custom(const char * imagepath){
-
-	// Data read from the header of the BMP file
-	unsigned char header[54]; // Each BMP file begins by a 54-bytes header
-	unsigned int dataPos;     // Position in the file where the actual data begins
-	unsigned int width, height;
-	unsigned int imageSize;   // = width*height*3
-	// Actual RGB data
-	unsigned char * data;
-
-	// Open the file
-	FILE * file = fopen(imagepath,"rb");
-	if (!file){
-		printf("Image could not be opened\n"); 
-		return 0;
-	}
-	if ( fread(header, 1, 54, file)!=54 ){ // If not 54 bytes read : problem
-    		printf("Not a correct BMP file\n");
-    		return false;
-	}
-	if ( header[0]!='B' || header[1]!='M' ){
-    		printf("Not a correct BMP file\n");
-    		return 0;
-	}
-	// Read ints from the byte array
-	dataPos    = *(int*)&(header[0x0A]);
-	imageSize  = *(int*)&(header[0x22]);
-	width      = *(int*)&(header[0x12]);
-	height     = *(int*)&(header[0x16]);
-	// Some BMP files are misformatted, guess missing information
-	if (imageSize==0)    imageSize=width*height*3; // 3 : one byte for each Red, Green and Blue component
-	if (dataPos==0)      dataPos=54; // The BMP header is done that way
-	// Create a buffer
-	data = new unsigned char [imageSize];
- 
-	// Read the actual data from the file into the buffer
-	fread(data,1,imageSize,file);
- 
-	//Everything is in memory now, the file can be closed
-	fclose(file);
-	// Create one OpenGL texture
-	GLuint textureID;
-	glGenTextures(1, &textureID);
- 
-	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, textureID);
- 
-	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
- 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-}
-
 MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
 {
 
-	GLuint Texture = loadBMP_custom("./mars_texture.bmp");
 
 	vector<float> vec;
     ifstream    file("mars.txt");
@@ -397,7 +294,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 	const vec4 z_axis(0.0f, 0.0f, 1.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 
-	vector<VertexAttributesPCN> vertices;
+	vector<VertexAttributesPCNT> vertices;
 	vector<GLuint> vertex_indices;
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
@@ -415,7 +312,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
             float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
             float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
 			vec3 altitude_addition = vec3(vec[vec.size()-1-counterer] * 1/6.0f) * normalize(vec3(x, y, z));
-            vertices.push_back(VertexAttributesPCN(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(x, y, z))) );
+            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(x, y, z)), vec2(-s*S, -r*R) ));
 			counterer++;
 		}
     }

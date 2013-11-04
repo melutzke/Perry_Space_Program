@@ -121,44 +121,22 @@ bool Ship::Initialize(int slices)
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 	const float increment =  360.0f / float(slices);
 		
-	/*	for each slice:
-			compute Ship triangle geometry
-			compute vectors to visualize normals for Ship triangle (BuildNormalVisualizationGeometry())
-			compute bottom triangle geometry
-			compute vectors to visualize normals for bottom triangle (BuildNormalVisualizationGeometry())
-	*/
-
-	//MeshPack * New_Cylinder = Mesh::Cylinder(slices, vec3(0.5f, 0.1f, 1.0f));
-	//for (float x = -1.0f; x <= 1.0f; x+=2.0f) {
-	//	for (float z = -1.0f; z <= 1.0f; z+=2.0f) {	
-			//MeshPack * New_Cylinder = Mesh::Experimental(1, slices, slices, vec3(x, 0.0f, z));
-
-			//MeshPack * New_Cylinder = Mesh::Experimental(5.0, slices, slices, vec3(0.0f, 0.0f, 0.0f));
-			//New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-			//delete New_Cylinder;
-			
-			
-
-	//	}
-	//}
 	cout << endl << "PRE_RENDERSPACESHIP" << endl;
 	RenderSpaceship(slices);
 	cout << endl << "POST_RENDER" << endl;
 
-	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
+	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
-	/*	The VertexAttributesPCN class stores vertex attributes: position, color and normal in that order.
 
-		Vertex attributes are stored in an interleaved manner aiding speed of vertex processing.
-	*/
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) 0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCN), (GLvoid *) (sizeof(vec3) * 1));	// Same
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 1));	// Same
+	
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
@@ -232,7 +210,6 @@ void Ship::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, con
 
 	glEnable(GL_DEPTH_TEST);
 
-	//modelview = rotate(modelview, time * 10.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
@@ -244,7 +221,6 @@ void Ship::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, con
 	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
 	this->GLReturnedError("Ship::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
-	glPointSize(0.5f);
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);
 	this->GLReturnedError("Ship::Draw - after draw");
