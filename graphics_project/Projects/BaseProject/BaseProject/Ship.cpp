@@ -116,7 +116,7 @@ void Ship::RenderSatellite(int slices) {
         for (float x = -4.0f; x <= 4.0f; x+=8.0f) {
                 float z = 0.0f;
 
-                MeshPack * panel = Mesh::Sphere(1.0f, slices, slices, vec3(x, 0.0f, z), vec3(0.4f, 6.0f, 2.5f), vec3(0.85f));
+                MeshPack * panel = Mesh::Sphere(1.0f, 6, 6, vec3(x, 0.0f, z), vec3(0.4f, 6.0f, 2.5f), vec3(0.9f));
                 panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                 delete panel;
 

@@ -107,7 +107,7 @@ bool Top::Initialize(int slices)
 		glBindVertexArray(0);
 	}
 
-	if (!this->shader.Initialize("top_shader.vert", "top_shader.frag"))
+	if (!this->shader.Initialize("mars_shader.vert", "mars_shader.frag"))
 		return false;
 
 
