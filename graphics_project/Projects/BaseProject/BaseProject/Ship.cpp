@@ -100,7 +100,37 @@ void Ship::RenderSpaceship(int slices) {
         }
 }
 
-bool Ship::Initialize(int slices)
+void Ship::RenderSatellite(int slices) {
+		// Reminder of Mesh functions:
+		// MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
+		// MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
+
+        // Build main body of spaceship
+        MeshPack * body_sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(2.25f), vec3(0.85f));
+        body_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+        delete body_sphere;
+
+        // Build rocket booster cylinders
+        float rotation = 0.0f;
+                        
+        for (float x = -4.0f; x <= 4.0f; x+=8.0f) {
+                float z = 0.0f;
+
+                MeshPack * panel = Mesh::Sphere(1.0f, slices, slices, vec3(x, 0.0f, z), vec3(0.4f, 6.0f, 2.5f), vec3(0.85f));
+                panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                delete panel;
+
+                // Wings
+                MeshPack * wing = Mesh::Cylinder(0.5f, 1.25f, slices, slices, vec3(0.0f, 1.25f, 0.0f), vec3(1.0f, 2.75f, 1.0f), vec3(0.85f), rotation, true);
+                wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                delete wing;
+
+                rotation += 180.0f;
+        }
+}
+
+
+bool Ship::Initialize(int slices, bool isSpaceship)
 {
 	if (this->GLReturnedError("Ship::Initialize - on entry"))
 		return false;
@@ -141,10 +171,15 @@ bool Ship::Initialize(int slices)
 
 	//	}
 	//}
-	cout << endl << "PRE_RENDERSPACESHIP" << endl;
-	RenderSpaceship(slices);
-	cout << endl << "POST_RENDER" << endl;
-
+	if (isSpaceship) {
+		cout << endl << "PRE_RENDERSPACESHIP" << endl;
+		RenderSpaceship(slices);
+		cout << endl << "POST_RENDERSPACESHIP" << endl;
+	} else {
+		cout << endl << "PRE_RENDERSATELLITE" << endl;
+		RenderSatellite(slices);
+		cout << endl << "POST_RENDERSATELLITE" << endl;
+	}
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCN), &this->vertices[0]))
 		return false;
 
