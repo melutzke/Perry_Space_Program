@@ -109,6 +109,18 @@ void DisplayInstructions()
 	}
 }
 
+vec3 CameraPosition(float radius, float vertical_rotation, float horizontal_rotation){
+	float camX1 = radius * sinf((horizontal_rotation)*(float(M_PI)/180.0f)) 
+							* cosf((vertical_rotation) * (float(M_PI)/180.0f));
+
+	float camY1 = radius * sinf((vertical_rotation) * (float(M_PI)/180.0f));
+
+	float camZ1 = -radius * cosf((horizontal_rotation)*(float(M_PI)/180.0f)) 
+							* cosf((vertical_rotation) * (float(M_PI)/180.0f));
+
+	return vec3(camX1, camY1, camZ1);
+}
+
 void CloseFunc()
 {
 	window.window_handle = -1;
@@ -235,23 +247,32 @@ void DisplayFunc()
 	glViewport(0, 0, window.size.x, window.size.y);
 	
 	vec3 y_axis(0.0f, 1.0f, 0.0f);
+
+	// cheap way to stop clicking the window on Perry's code from crashing the program
+	if(!window.window_aspect) window.window_aspect = 0.66f;
+
 	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 
-		// camX, camY, camZ solved with a little help from stack overflow
+	// camX, camY, camZ solved with a little help from stack overflow
 	// stackoverflow.com/questions/287655/opengl-rotating-a-camera-around-a-point */
 	// solving for the x y and z positions prevents us from having to make a series of awkward euler rotations.
 	//		this also prevents us from having to worry about things such as gimbal lock
 
 	mat4 modelview;
+
+	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+
 	if (window.CameraMode == 0) {
 		// just your slowly turning satellite
 		// in view: satellite, STARS
 		// what moves: SATELLITE ROTATES
 
-		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
+		
 
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		
+
+		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
@@ -266,8 +287,6 @@ void DisplayFunc()
 		// what moves: SHIP ROTATES
 
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
-
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
@@ -287,8 +306,6 @@ void DisplayFunc()
 			projection = perspective(75.0f, window.window_aspect, 0.1f, 1000.0f);
 		else
 			projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
-
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
@@ -318,22 +335,11 @@ void DisplayFunc()
 		float distance1 = 6.0f;
 		float distance2 = 5.0f;
 
-		float camX1 = distance1 * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camY1 = distance1 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camZ1 = -distance1 * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-
-		float camX2 = distance2 * sinf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camY2 = distance2 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camZ2 = -distance2 * cosf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		// for flying perspective, calculate another set of points, at a lower distance
-
-		vec3 eye = vec3(camX1, camY1, camZ1);
-		vec3 target = vec3(camX2, camY2, camZ2);
+		vec3 eye =    CameraPosition(distance1, window.vertical_rotation, window.horizontal_rotation);
+		vec3 target = CameraPosition(distance2, window.vertical_rotation, window.horizontal_rotation+45.0f);
 
 		modelview = lookAt(eye, target, target);
 		modelview = rotate(modelview, window.pan_angle, eye);
-
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
@@ -362,21 +368,10 @@ void DisplayFunc()
 		float distance1 = 6.0f;
 		float distance2 = 5.0f;
 
-		float camX1 = distance1 * sinf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camY1 = distance1 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camZ1 = -distance1 * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-
-		float camX2 = distance2 * sinf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camY2 = distance2 * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		float camZ2 = -distance2 * cosf((window.horizontal_rotation+45)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
-		// for flying perspective, calculate another set of points, at a lower distance
-
-		vec3 eye = vec3(camX1, camY1, camZ1);
-		vec3 target = vec3(camX2, camY2, camZ2);
+		vec3 eye =    CameraPosition(distance1, window.vertical_rotation, window.horizontal_rotation);
+		vec3 target = CameraPosition(distance2, window.vertical_rotation, window.horizontal_rotation+45.0f);
 
 		modelview = lookAt(eye, target, target);
-
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
@@ -384,8 +379,7 @@ void DisplayFunc()
 		// This un-does the rotation of Mars, resulting in the ship being drawn in a static
 		// position while the planet spins
 		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, -1.0f, 0.0f));
-		
-		
+
 		modelview = rotate(modelview, 160.0f, y_axis);				// This is done to get the ship to appear 20 
 																			// degrees 'ahead' of the camera
 
@@ -395,6 +389,7 @@ void DisplayFunc()
 		glDisable( GL_CULL_FACE );
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		glEnable( GL_CULL_FACE );
+
 	} else if(window.CameraMode == 5) {
 		// Nice view of just STAR FIELD
 		// in view: STARS
@@ -406,80 +401,14 @@ void DisplayFunc()
 		float camY = distance * sinf((window.vertical_rotation)*(float(M_PI)/180.0f));
 		float camZ = -distance * cosf((window.horizontal_rotation)*(float(M_PI)/180.0f)) * cosf((window.vertical_rotation)*(float(M_PI)/180.0f));
 
-		modelview = lookAt(vec3(camX, camY, camZ), vec3(0.0f, 0.0f, 0.0f), y_axis);
+		vec3 eye =    CameraPosition(distance, window.vertical_rotation, window.horizontal_rotation);
+		vec3 target = vec3(0.0f);
 
-		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+		modelview = lookAt(eye, target, y_axis);
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 	
 	}
-
-
-	// EARTH SKIMMING MODE
-	//modelview = lookAt(vec3(0.0f, 0.0f, 5.3f), vec3(-8.0f, 0.0f, 0.0f), vec3(-1.0f, 0.0f, 0.0f));
-	//modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
-	//modelview = rotate(modelview, window.vertical_rotation, vec3(1.0f, 0.0f, 0.0f));
-	
-	// glPolygonMode is NOT modern OpenGL but will be allowed in Projects 2 and 3
-	/*
-	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
-
-	if (window.CameraMode == 1){
-		// just your slowly turning ship
-		// in view: SHIP, STARS
-		// what moves: SHIP ROTATES
-
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
-		modelview = rotate(modelview, window.horizontal_rotation, vec3(0.0f, 1.0f, 0.0f));
-		
-		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-	} else if(window.CameraMode == 2){
-		// just Mars slowly spinning
-		// in view: MARS, STARS
-		// what moves: MARS ROTATES
-
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-	} else if(window.CameraMode == 3){
-		// first person view over mars (NO SHIP)
-		// in view: MARS, STARS
-		// what moves: CAMERA CHANGES POSITION
-
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-	} else if(window.CameraMode == 4) {
-		// first person view over mars w/ SHIP
-		// in view: MARS, SHIP, STARS
-		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
-
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		
-		
-		//ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-
-	} else if(window.CameraMode == 5) {
-		// Nice view of just STAR FIELD
-		// in view: STARS
-		// what moves: STARS ROTATE
-
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-	}
-
-	modelview = rotate(modelview, 180.0f, vec3(1.0f, 0.0f, 0.0f));
-	modelview = rotate(modelview, window.horizontal_rotation-50, vec3(0.0f, 1.0f, 0.0f));
-	modelview = translate(modelview, vec3(5.5f, 0.0f, 0.0f));
-	modelview = scale(modelview, vec3(0.125f));
-	modelview = rotate(modelview, 270.0f, vec3(1.0f, 0.0f, 0.0f));
-		
-	ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-	*/
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	DisplayInstructions();
