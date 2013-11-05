@@ -38,10 +38,25 @@ bool Background::Initialize()
 		pY = pRadius * sin(theta) * sin(phi);
 		pZ = pRadius * cos(phi);
 
+		// What colors are stars?
+		// http://www.vendian.org/mncharity/dir3/starcolor/
+
+		vec3 colors [7] = {
+			vec3(155/255.0f, 176/255.0f, 255/255.0f),
+			vec3(170/255.0f, 191/255.0f, 255/255.0f), 
+			vec3(202/255.0f, 215/255.0f, 255/255.0f), 
+			vec3(248/255.0f, 247/255.0f, 255/255.0f), 
+			vec3(255/255.0f, 244/255.0f, 234/255.0f), 
+			vec3(255/255.0f, 210/255.0f, 161/255.0f), 
+			vec3(255/255.0f, 204/255.0f, 111/255.0f)
+		};
+
+		int color_choice = rand()%30;
+		vec3 color = (color_choice < 7) ? colors[color_choice] : vec3(1.0f);
 
 		VertexAttributesPCNT newPoint = VertexAttributesPCNT(
 			vec3( pX, pY, pZ ), 
-			vec3( float(rand()%1000)/1000.0f ), 
+			color, 
 			vec3( 0.0f, 0.0f, -1.0f ),
 			vec2( 0.0f )
 		);

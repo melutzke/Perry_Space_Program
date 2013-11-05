@@ -16,41 +16,14 @@ using namespace glm;
 
 Mars::Mars() : Object()
 {
-	vec4 lighter_color(MakeColor(255, 69, 0, 1.0f));
-	vec4 darker_color = vec4(vec3(lighter_color) * 2.0f / 3.0f, 1.0f);
-	this->colors[0] = darker_color;
-	this->colors[1] = lighter_color;
 	this->shader_index = 0;
 	this->texture;
-}
-
-inline int ColorIndex(int i, int slices)
-{
-	return (i / (slices / 4)) % 2;
-}
-
-inline int PreviousSlice(int i, int slices)
-{
-	return (i == 0) ? slices - 1 : i - 1;
-}
-
-void Mars::BuildNormalVisualizationGeometry()
-{
-	const float normal_scalar = 0.125f;
-	for (int j = 1; j <= 3; ++j)
-	{
-		this->normal_vertices.push_back(VertexAttributesP(this->vertices[this->vertices.size() - j].position));
-		this->normal_vertices.push_back(VertexAttributesP(this->vertices[this->vertices.size() - j].position + this->vertices[this->vertices.size() - j].normal * normal_scalar));
-		this->normal_indices.push_back(this->normal_vertices.size() - 2);
-		this->normal_indices.push_back(this->normal_vertices.size() - 1);
-	}
 }
 
 void Mars::StepShader()
 {
 	this->shader_index = ++this->shader_index % this->shaders.size();
 }
-
 
 bool Mars::Initialize(string the_file)
 {
@@ -66,20 +39,16 @@ bool Mars::Initialize(string the_file)
 		return false;
 	}
 
-	this->colors[0] = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	this->colors[1] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-
 	mat4 m;
 
-
 	MeshPack * mars_object = Mesh::Mars(m, 5.0, the_file);
-	mars_object->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+	mars_object->addToScene(this->vertices, this->vertex_indices);
 	delete mars_object;
-			
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
+	// Mars texture, all 13 megabytes of it
 	this->texture = ILContainer();
 	if( ! this->texture.Initialize("mars_full_res.jpg") )
 		return false;
@@ -161,7 +130,6 @@ void Mars::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, con
 	glBindVertexArray(0);
 	this->GLReturnedError("Mars::Draw - after draw");
 	glUseProgram(0);
-	
 
 	glDisable(GL_TEXTURE_2D);
 

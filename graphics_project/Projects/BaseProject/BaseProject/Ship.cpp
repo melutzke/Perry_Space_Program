@@ -14,33 +14,7 @@ using namespace glm;
 
 Ship::Ship() : Object()
 {
-	vec4 lighter_color(MakeColor(255, 69, 0, 1.0f));
-	vec4 darker_color = vec4(vec3(lighter_color) * 2.0f / 3.0f, 1.0f);
-	this->colors[0] = darker_color;
-	this->colors[1] = lighter_color;
 	this->shader_index = 0;
-}
-
-inline int ColorIndex(int i, int slices)
-{
-	return (i / (slices / 4)) % 2;
-}
-
-inline int PreviousSlice(int i, int slices)
-{
-	return (i == 0) ? slices - 1 : i - 1;
-}
-
-void Ship::BuildNormalVisualizationGeometry()
-{
-	const float normal_scalar = 0.125f;
-	for (int j = 1; j <= 3; ++j)
-	{
-		this->normal_vertices.push_back(VertexAttributesP(this->vertices[this->vertices.size() - j].position));
-		this->normal_vertices.push_back(VertexAttributesP(this->vertices[this->vertices.size() - j].position + this->vertices[this->vertices.size() - j].normal * normal_scalar));
-		this->normal_indices.push_back(this->normal_vertices.size() - 2);
-		this->normal_indices.push_back(this->normal_vertices.size() - 1);
-	}
 }
 
 void Ship::StepShader()
@@ -55,22 +29,19 @@ void Ship::RenderSpaceship(int slices) {
 		m = scale(m, vec3(1.0f, 4.0f, 1.0f));
 
         MeshPack * ship_body = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.0f, 0.0f, 1.0f));
-        ship_body->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+        ship_body->addToScene(this->vertices, this->vertex_indices);
         delete ship_body;
-
                         
         // Build top spheres for ship
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-
 						m = mat4(1.0f);
 						m = translate(m, vec3(x, 0.0f, z));
 						m = scale(m, vec3(0.5f));
 
                         MeshPack * top_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.0f, 0.0f, 1.0f));
-                        top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        top_sphere->addToScene(this->vertices, this->vertex_indices);
                         delete top_sphere;
-
                 }
         }
                         
@@ -82,7 +53,7 @@ void Ship::RenderSpaceship(int slices) {
 						m = scale(m, vec3(0.5f));
 
                         MeshPack * bot_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(1.0f, 0.0f, 0.0f));
-                        bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        bot_sphere->addToScene(this->vertices, this->vertex_indices);
                         delete bot_sphere;
                 }
         }
@@ -117,9 +88,9 @@ void Ship::RenderSpaceship(int slices) {
                         // Wings
                         MeshPack * wing = Mesh::Cylinder(m, 0.5f, 1.0f, slices, slices, vec3(0.0f, 0.0f, 1.0f));
                         
-						cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-						cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-						wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+						cyl->addToScene(this->vertices, this->vertex_indices);
+						cyl2->addToScene(this->vertices, this->vertex_indices);
+						wing->addToScene(this->vertices, this->vertex_indices);
 
 						delete cyl;
 						delete cyl2;
@@ -139,7 +110,7 @@ void Ship::RenderSatellite(int slices) {
 
         // Build main body of spaceship
         MeshPack * body_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.85f));
-        body_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+        body_sphere->addToScene(this->vertices, this->vertex_indices);
         delete body_sphere;
 
         
@@ -168,8 +139,8 @@ void Ship::RenderSatellite(int slices) {
 
                 MeshPack * wing = Mesh::Cylinder(m, 0.5f, 1.25f, slices, slices, vec3(0.85f));
 
-                wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-				panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                wing->addToScene(this->vertices, this->vertex_indices);
+				panel->addToScene(this->vertices, this->vertex_indices);
 
                 delete panel;
 				delete wing;
@@ -190,9 +161,6 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 	if (slices <= 0)
 		slices = 1;
 
-	this->colors[0] = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	this->colors[1] = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-
 	mat4 m;
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f)); // DA FUQ...
@@ -204,17 +172,15 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 	if (isSpaceship) {
 		cout << endl << "PRE_RENDERSPACESHIP" << endl;
 		RenderSpaceship(slices);
-		cout << endl << "POST_RENDERSPACESHIP" << endl;
+		cout << "POST_RENDERSPACESHIP" << endl;
 	} else {
 		cout << endl << "PRE_RENDERSATELLITE" << endl;
 		RenderSatellite(slices);
-		cout << endl << "POST_RENDERSATELLITE" << endl;
+		cout << "POST_RENDERSATELLITE" << endl;
 	}
-
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
-
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
@@ -265,23 +231,6 @@ void Ship::Draw(const ivec2 & size)
 {
 	assert(false);
 }
-
-/*	A note about drawing the normals.
-
-	If you scale this object non-uniformly, drawing the normals will
-	not be correct. This is because the normals are being stored for
-	visualization as geometry. As such, scaling will not be corrected
-	by the normal matrix.
-*/
-
-/*	A note about the index arrays.
-
-	In this example, the index arrays are unsigned ints. If you know
-	for certain that the number of vertices will be small enough, you
-	can change the index array type to shorts or bytes. This will have
-	the two fold benefit of using less storage and transferring fewer
-	bytes.
-*/
 
 void Ship::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time, const int CameraMode)
 {

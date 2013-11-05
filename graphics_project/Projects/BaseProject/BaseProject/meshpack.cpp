@@ -12,15 +12,14 @@
 using namespace std;
 using namespace glm;
 
-MeshPack::MeshPack(vector<VertexAttributesPCNT> vertices, vector<GLuint> vertex_indices, vector<GLuint> normal_indices)
+MeshPack::MeshPack(vector<VertexAttributesPCNT> vertices, vector<GLuint> vertex_indices)
 {
 	this->vertices = vertices;
 	this->vertex_indices = vertex_indices;
-	this->normal_indices = normal_indices;
 	this->m = mat4(1.0f);
 }
 
-void MeshPack::addToScene(vector<VertexAttributesPCNT>& arg_vertices, vector<GLuint>& arg_vertex_indices, vector<GLuint>& arg_normal_indices){
+void MeshPack::addToScene(vector<VertexAttributesPCNT>& arg_vertices, vector<GLuint>& arg_vertex_indices){
 
 	vector<VertexAttributesPCNT> temp_vertices;
 
@@ -36,7 +35,6 @@ void MeshPack::addToScene(vector<VertexAttributesPCNT>& arg_vertices, vector<GLu
 
 	arg_vertices.insert(arg_vertices.end(), temp_vertices.begin(), temp_vertices.end());
 	arg_vertex_indices.insert(arg_vertex_indices.end(), this->vertex_indices.begin(), this->vertex_indices.end());
-	arg_normal_indices.insert(arg_normal_indices.end(), this->normal_indices.begin(), this->normal_indices.end());
 
 	temp_vertices.clear();
 }

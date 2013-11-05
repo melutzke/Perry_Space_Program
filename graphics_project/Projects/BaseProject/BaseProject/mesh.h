@@ -34,9 +34,6 @@ private:
 	static int right(int index, int stacks, int slices);
 	static void wind(std::vector<GLuint>& vertex_indices, int stacks, int slices);
 
-	glm::vec4 colors[2];
 	std::vector<VertexAttributesPCNT> vertices;
-	std::vector<VertexAttributesP> normal_vertices;
 	std::vector<GLuint> vertex_indices;
-	std::vector<GLuint> normal_indices;
 };

@@ -33,8 +33,6 @@ public:
 	ILContainer texture;
 
 private:
-	void BuildNormalVisualizationGeometry();
-	glm::vec4 colors[2];
 	std::vector<VertexAttributesPCNT> vertices;
 	typedef Object super;
 	int shader_index;

@@ -22,11 +22,9 @@
 class MeshPack
 {
 public:
-	MeshPack(std::vector<VertexAttributesPCNT> vertices, std::vector<GLuint> vertex_indices, std::vector<GLuint> normal_indices);
+	MeshPack(std::vector<VertexAttributesPCNT> vertices, std::vector<GLuint> vertex_indices);
 	std::vector<VertexAttributesPCNT> vertices;
 	std::vector<GLuint> vertex_indices;
-	std::vector<VertexAttributesP> normal_vertices;
-	std::vector<GLuint> normal_indices;
 	glm::mat4 m;
-	void addToScene(std::vector<VertexAttributesPCNT>& vertices, std::vector<GLuint>& vertex_indices, std::vector<GLuint>& normal_indices);
+	void addToScene(std::vector<VertexAttributesPCNT>& vertices, std::vector<GLuint>& vertex_indices);
 };

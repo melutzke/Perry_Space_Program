@@ -138,7 +138,7 @@ MeshPack* Mesh::Cylinder(mat4 m, float top_radius, float bot_radius, unsigned in
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
-	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
+	MeshPack * newPack = new MeshPack(vertices, vertex_indices);
 
 	// clear temporary storage
 	vertices.clear();
@@ -196,14 +196,11 @@ MeshPack * Mesh::Sphere(mat4 m, float radius, unsigned int stacks, unsigned int 
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
-	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
+	MeshPack * newPack = new MeshPack(vertices, vertex_indices);
 	std::cout << "Generated MeshPack w/ " << vertices.size() << " vertices." << endl;
 
 	return newPack;
-
 }
-
-
 
 glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int stacks, int slices) {
 	vec3 NewNormal = vec3(0.0f);

@@ -15,16 +15,6 @@ out vec3 normal;
 out vec3 position;
 out vec2 tex_coord;
 
-
-
-
-
-
-
-
-
-
-
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
