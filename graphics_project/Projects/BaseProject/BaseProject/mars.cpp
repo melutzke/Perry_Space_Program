@@ -1,11 +1,8 @@
-/*	Perry Kivolowitz - University of Wisconsin - Madison 
-	Computer Sciences Department
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	A sample hello world like program demonstrating modern
-	OpenGL techniques. 
-
-	Created:	2/25/13
-	Updates:
+	The Mars class creates our Mars given an input file, as well as generates
+	textures for the Red Planet.
 */
 
 #include "Mars.h"
@@ -74,9 +71,9 @@ bool Mars::Initialize(string the_file)
 
 	mat4 m;
 
-	MeshPack * New_Cylinder = Mesh::Mars(5.0, vec3(0.0f, 0.0f, 0.0f), the_file);
-	New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-	delete New_Cylinder;
+	MeshPack * mars_ojbect = Mesh::Mars(5.0, vec3(0.0f, 0.0f, 0.0f), the_file);
+	mars_ojbect->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+	delete mars_ojbect;
 			
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
@@ -138,23 +135,6 @@ void Mars::Draw(const ivec2 & size)
 {
 	assert(false);
 }
-
-/*	A note about drawing the normals.
-
-	If you scale this object non-uniformly, drawing the normals will
-	not be correct. This is because the normals are being stored for
-	visualization as geometry. As such, scaling will not be corrected
-	by the normal matrix.
-*/
-
-/*	A note about the index arrays.
-
-	In this example, the index arrays are unsigned ints. If you know
-	for certain that the number of vertices will be small enough, you
-	can change the index array type to shorts or bytes. This will have
-	the two fold benefit of using less storage and transferring fewer
-	bytes.
-*/
 
 void Mars::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time, const int CameraMode)
 {

@@ -1,11 +1,8 @@
-/*	Perry Kivolowitz - University of Wisconsin - Madison 
-	Computer Sciences Department
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	A sample hello world like program demonstrating modern
-	OpenGL techniques. 
-
-	Created:	2/25/13
-	Updates:
+	The Ship class is used to generate the spaceship and satellite/TIE Fighters
+	used in certain scenes of the program.
 */
 
 #include <iostream>
@@ -53,16 +50,16 @@ void Ship::StepShader()
 
 void Ship::RenderSpaceship(int slices) {
         // Build main body of spaceship
-        MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
-        New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-        delete New_Sphere;
+        MeshPack * ship_body = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
+        ship_body->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+        delete ship_body;
                         
-        // Build Mars spheres for ship
+        // Build top spheres for ship
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-                        MeshPack * Ship_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
-                        Ship_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete Ship_sphere;
+                        MeshPack * top_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
+                        top_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete top_sphere;
                 }
         }
                         
@@ -81,31 +78,29 @@ void Ship::RenderSpaceship(int slices) {
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
 
+						// Principal booster body cylinder
                         MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
                         cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                         delete cyl;
 
-                        // Fancy fans
-                        MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-                        cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete cyl2;
+                        // Fancy fans at the bottom of the rocket boosters
+                        MeshPack * booster_fan = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
+                        booster_fan->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        delete booster_fan;
 
-                        // Wings
+                        // Wings connecting boosters to main fuselage
                         MeshPack * wing = Mesh::Cylinder(0.5f, 1.0f, slices, slices, vec3(1.5f, 0.5f, 0.0f), vec3(1.5f, 2.5f, 0.5f), vec3(0.0f, 0.0f, 1.0f), rotation, true);
                         wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                         delete wing;
 
+						// This rotation is used solely for the generation of the wings
                         rotation += 90.0f;
                 }
         }
 }
 
 void Ship::RenderSatellite(int slices) {
-		// Reminder of Mesh functions:
-		// MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
-		// MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
-
-        // Build main body of spaceship
+		// Build main body of spaceship
         MeshPack * body_sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(2.25f), vec3(0.85f));
         body_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
         delete body_sphere;
@@ -116,11 +111,14 @@ void Ship::RenderSatellite(int slices) {
         for (float x = -4.0f; x <= 4.0f; x+=8.0f) {
                 float z = 0.0f;
 
+				// These are the TIE Fighter's outer panels.  In order to more accurately
+				// portray the notion of a TIE Fighter's outer panels, we simply
+				// drastically lowered the number of slices and stacks of the sphere
                 MeshPack * panel = Mesh::Sphere(1.0f, 6, 6, vec3(x, 0.0f, z), vec3(0.4f, 6.0f, 2.5f), vec3(0.9f));
                 panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                 delete panel;
 
-                // Wings
+                // Wings - same as the spaceship, except a few tweaks made to the size and scale
                 MeshPack * wing = Mesh::Cylinder(0.5f, 1.25f, slices, slices, vec3(0.0f, 1.25f, 0.0f), vec3(1.0f, 2.75f, 1.0f), vec3(0.85f), rotation, true);
                 wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                 delete wing;
@@ -161,6 +159,8 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 		RenderSatellite(slices);
 		cout << endl << "POST_RENDERSATELLITE" << endl;
 	}
+
+
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
@@ -195,7 +195,6 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 
 	this->shaders.push_back(&this->shader);
 	this->shaders.push_back(&this->noise);
-	//this->shaders.push_back(&this->stripes_model_space);
 
 	if (this->GLReturnedError("Background::Initialize - on exit"))
 		return false;

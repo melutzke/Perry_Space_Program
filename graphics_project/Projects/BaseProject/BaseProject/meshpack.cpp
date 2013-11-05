@@ -1,9 +1,11 @@
-/*	A more sophisticated Hello World using modern OpenGL
-	Perry Kivolowitz - UW - Madison - CS 559 demo
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	Created:	02/28/13
-	Updates:
+	The Meshpack class is a fancy container class for a mesh object's
+	vertices, indexes, and normals, and is then used to generate
+	a given scene.
 */
+
 #include <iostream>
 #include "meshpack.h"
 

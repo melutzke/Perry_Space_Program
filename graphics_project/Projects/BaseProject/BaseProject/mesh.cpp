@@ -1,13 +1,9 @@
-/*	Perry Kivolowitz - University of Wisconsin - Madison 
-	Computer Sciences Department
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	A sample hello world like program demonstrating modern OpenGL techniques. 
-
-	Object() is a sample base class upon which drawable objects might
-	be derived. It assumes that all drawable objects have some geometry
-	to buffer.
-
-	Created:	2/25/13
+	The Mesh class is used to generate the meshes, and depending upon the
+	shape, it places points and generates normals in the form of a
+	MeshPack object - which is essentially a glorified attribute-holder.
 */
 
 #include <iostream>
@@ -47,7 +43,7 @@ void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAt
 
 int Mesh::up (int index, int stacks, int slices) {
 	if (index >= (stacks-1)*slices)
-		// Mars row – there IS no 'up'
+		// Top row – there IS no 'up'
 		return index;
 	else
 		return index + slices;
@@ -74,21 +70,30 @@ int Mesh::right (int index, int stacks, int slices) {
 		return index + 1;
 }
 
-MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
+MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 {
 	if (slices < 0) slices = 1;
 
-	
 	mat4 m(1.0f);
+	
+	// This rotation is here principally for the wing cylinders, also used
+	// on the TIE fighters
 	m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));
 
+	// Rotates the cylinders to lay 'down the x-axis'
+	//
+	// This created a few issues of reference when we were trying to
+	// create wings outside of this class (we had to change our
+	// frame of reference
 	if (isWing) {
 		m = rotate(m, -90.0f, vec3(0.0f, 0.0f, 1.0f));
 	}
 
+	// The last of the matrix transformations, I promise
 	m = translate(m, coords);
 	m = scale(m, scaleVec);
 
+	
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
@@ -99,16 +104,31 @@ MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stack
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
 
+
+	// Here's where we start finding the positions of the points
+	// in the mesh.
+	//
+	// R and S represent an incremental rotational angle so that
+	// each point gets placed at the appropriate longitudinal
+	// and latitudinal points with respect to the slices and
+	// stacks given to the cylinder
+	//
+	// It should be noticed that this builds the cylinder from the
+	// bottom, up.  We start at y=0, and build up to y=1.
 	float const R = 1./(float)(stacks-1);
     float const S = 1./(float)(slices-1);
     int r, s;
 	
-
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
 
-			float curr_radius = (Mars_radius - bot_radius)*(r*R) + bot_radius;
+			// Clever math to find the current stack's radius
+			float curr_radius = (top_radius - bot_radius)*(r*R) + bot_radius;
 
+			// This method was done to plot points as opposed to iterating over only
+			// the stacks and applying matrix rotations as it proved rather
+			// difficult to get a uniform distribution of points by the
+			// latter method.
             float const y = r * R;
             float const x = cos(2*M_PI * s * S);
             float const z = sin(2*M_PI * s * S);
@@ -132,10 +152,9 @@ MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stack
 	}
 
 	for(int i = 0; i < vertices.size(); i++){
-		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
-		// average them
-		// ???
-		// profit!
+		// Step 1) get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
+		// Step 2) average them
+		// Step 3) profit!
 
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
@@ -178,7 +197,9 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
     float const S = 1./(float)(slices-1);
     int r, s;
 	
-
+	// This is similar to how we construct the cylinder, except now our
+	// y-values are scaled by something more complex than the current
+	// stack
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
 
@@ -205,15 +226,8 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 	}
 
 	for(int i = slices; i < vertices.size() - slices; i++){
-		// get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
-		// average them
-		// ???
-		// profit!
-
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
-
-
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
 	std::cout << "Generated MeshPack w/ " << vertices.size() << " vertices." << endl;
@@ -239,11 +253,10 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int sta
 	NewNormal += cross( (v2 - myself), (v3 - myself) );
 	NewNormal += cross( (v4 - myself), (v5 - myself) );
 
-	//NewNormal += cross( (v5 - myself), (v0 - myself) );
-	//NewNormal += cross( (v1 - myself), (v2 - myself) );
-	//NewNormal += cross( (v3 - myself), (v4 - myself) );
+	NewNormal += cross( (v5 - myself), (v0 - myself) );
+	NewNormal += cross( (v1 - myself), (v2 - myself) );
+	NewNormal += cross( (v3 - myself), (v4 - myself) );
 
-	//blended shading
 	if(NewNormal != vec3(0.0f))
 		NewNormal = normalize(NewNormal);
 	
@@ -286,7 +299,6 @@ MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 
 	if (slices < 0) slices = 1;
 
-
 	mat4 m = mat4(1.0f);
 
 	m = translate(m, coords);
@@ -307,6 +319,10 @@ MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 	
 	cout << "Generating points" << endl;
 	int counterer = 0;
+
+	// This is identical to the generation of a regular sphere, except for the
+	// altitude addition, which is scaled by 1/6 to allow for a reasonable-
+	// looking Red Planet
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
 
@@ -319,7 +335,7 @@ MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 		}
     }
 
-	cout << "Making indice combinations" << endl;
+	cout << "Making index combinations" << endl;
 
 	for(int i = 0; i < stacks-1; i++){
 		for(int k = 0; k < slices-1; k++){

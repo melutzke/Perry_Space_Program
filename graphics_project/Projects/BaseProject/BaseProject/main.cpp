@@ -1,17 +1,9 @@
-/*	A more sophisticated example of modern OpenGL
-	Perry Kivolowitz - UW - Madison - CS 559 demo
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	In this example program, I will build a solid
-	object comprised of two triangle fans. Note 
-	these are Marsologically triangle fans but the
-	OpenGL triangle fan functionality is not being
-	used. 
-
-	Created:	02/28/13
-	Updates:	03/05/13 - continued improvements
-				Added solid color shader for drawing normals
-				Switched to timer based redisplay.
+	The main class is the driver of the Mars generating program.
 */
+
 #include <iostream>
 #include <assert.h>
 #include <vector>
@@ -54,12 +46,27 @@ public:
 	}
 
 	
-
+	// These rotation angles are used to rotate the modelview for good
+	// testing purposes
 	float horizontal_rotation;
 	float vertical_rotation;
+	
+	// The pan angle is used to rotate the focal point of the camera
+	// in flyover mode
 	float pan_angle;
 
+	// This constant determines the size of the swarm of TIE Fighters
+	// around Mars (when tie_attack is enabled).
 	static const int NUM_SATELLITES = 50;
+
+	// These constants are used to make the massive if-statement cycling
+	// over the camera modes more intuitively clear
+	static const int SATELLITE_VIEW = 0;
+	static const int SHIP_VIEW = 1;
+	static const int MARS_THIRD_PERSON = 2;
+	static const int MARS_FLYOVER_NO_SHIP = 3;
+	static const int MARS_FLYOVER_SHIP = 4;
+	static const int STAR_FIELD_VIEW = 5;
 
 	float time_last_pause_began;
 	float total_time_paused;
@@ -71,6 +78,11 @@ public:
 	ivec2 size;
 	float window_aspect;
 	vector<string> instructions;
+	
+	// These four vectors are used for storing random orbit paths, altitudes,
+	// and airspeeds of the TIE Fighter swarm.  Initially, rand() was called
+	// every time the display function was called.  That produced some
+	// chaotic results!
 	vector<float> satellite_x_rotations;
 	vector<float> satellite_z_rotations;
 	vector<float> satellite_altitudes;
@@ -78,7 +90,7 @@ public:
 } window;
 
 Background background;
-Mars Mars;
+Mars mars;
 Ship ship;
 Ship satellite;
 
@@ -109,7 +121,15 @@ void DisplayInstructions()
 	}
 }
 
+// This function is used to calculate the position of the camera and target
+// locations in the flyover modes
 vec3 CameraPosition(float radius, float vertical_rotation, float horizontal_rotation){
+
+	// camX, camY, camZ solved with a little help from stack overflow
+	// stackoverflow.com/questions/287655/opengl-rotating-a-camera-around-a-point */
+	// solving for the x y and z positions prevents us from having to make a series of awkward euler rotations.
+	//		this also prevents us from having to worry about things such as gimbal lock
+
 	float camX1 = radius * sinf((horizontal_rotation)*(float(M_PI)/180.0f)) 
 							* cosf((vertical_rotation) * (float(M_PI)/180.0f));
 
@@ -125,7 +145,7 @@ void CloseFunc()
 {
 	window.window_handle = -1;
 	background.TakeDown();
-	Mars.TakeDown();
+	mars.TakeDown();
 	ship.TakeDown();
 	satellite.TakeDown();
 	_CrtDumpMemoryLeaks();
@@ -133,7 +153,6 @@ void CloseFunc()
 
 void ReshapeFunc(int w, int h)
 {
-	// Question for reader: Why is this 'if' statement here?
 	if (h > 0)
 	{
 		window.size = ivec2(w, h);
@@ -144,7 +163,12 @@ void ReshapeFunc(int w, int h)
 void KeyboardFunc(unsigned char c, int x, int y)
 {
 	float current_time = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
-
+	// Keyboard key functionality:
+	//		s/m: cycle through shaders of the ship/satellite and Mars respectively
+	//		+/-: cycles through scene modes
+	//		i,j,k,l: rotates the model in any given scene, functions similarly
+	//				 to w,a,s,d as principle keys of movement in simulations
+	//		e: toggles the TIE swarm
 	switch (c)
 	{
 	case 's':
@@ -153,21 +177,23 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		break;
 
 	case 'm':
-		Mars.StepShader();
+		mars.StepShader();
 		break;
 
 	case '+':
+		window.pan_angle = 0.0f;
 		window.CameraMode++;
-		if(window.CameraMode > 5) window.CameraMode = 0;
+		if(window.CameraMode > window.STAR_FIELD_VIEW) window.CameraMode = window.SATELLITE_VIEW;
 		break;
 
 	case '-':
+		window.pan_angle = 0.0f;
 		window.CameraMode--;
-		if(window.CameraMode < 0) window.CameraMode = 5;
+		if(window.CameraMode < window.SATELLITE_VIEW) window.CameraMode = window.STAR_FIELD_VIEW;
 		break;
 
 	case 'n':
-		Mars.EnableNormals(window.normals = !window.normals);
+		mars.EnableNormals(window.normals = !window.normals);
 		break;
 
 	case 'w':
@@ -206,7 +232,8 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		if(window.horizontal_rotation > 360) window.horizontal_rotation -= 360.0f;
 		break;
 	case 'e':
-		window.tie_attack = !window.tie_attack;
+		if (window.CameraMode == window.MARS_THIRD_PERSON || window.CameraMode == window.MARS_FLYOVER_NO_SHIP)
+			window.tie_attack = !window.tie_attack;
 		break;
 	case 'x':
 	case 27:
@@ -219,16 +246,22 @@ void SpecialFunc(int c, int x, int y)
 {
 	switch (c)
 	{
+	// We only want to be able to rotate the pan angle if we're in
+	// the flyover mode with no ship
 	case GLUT_KEY_LEFT:
-		window.pan_angle-=3.0f;
-		if (window.pan_angle < 0.0f)
-			window.pan_angle += 360.0f;
+		if (window.CameraMode == window.MARS_FLYOVER_NO_SHIP) {
+			window.pan_angle-=3.0f;
+			if (window.pan_angle < 0.0f)
+				window.pan_angle += 360.0f;
+		}
 		break;
 
 	case GLUT_KEY_RIGHT:
-		window.pan_angle+=3.0f;
-		if (window.pan_angle > 360.0f)
-			window.pan_angle -= 360.0f;
+		if (window.CameraMode == window.MARS_FLYOVER_NO_SHIP) {
+			window.pan_angle+=3.0f;
+			if (window.pan_angle > 360.0f)
+				window.pan_angle -= 360.0f;
+		}
 		break;
 	}
 }
@@ -248,29 +281,19 @@ void DisplayFunc()
 	
 	vec3 y_axis(0.0f, 1.0f, 0.0f);
 
-	// cheap way to stop clicking the window on Perry's code from crashing the program
+	// cheap way to stop clicking the window from crashing the program
 	if(!window.window_aspect) window.window_aspect = 0.66f;
 
 	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
-
-
-	// camX, camY, camZ solved with a little help from stack overflow
-	// stackoverflow.com/questions/287655/opengl-rotating-a-camera-around-a-point */
-	// solving for the x y and z positions prevents us from having to make a series of awkward euler rotations.
-	//		this also prevents us from having to worry about things such as gimbal lock
 
 	mat4 modelview;
 
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
-	if (window.CameraMode == 0) {
+	if (window.CameraMode == window.SATELLITE_VIEW) {
 		// just your slowly turning satellite
 		// in view: satellite, STARS
 		// what moves: SATELLITE ROTATES
-
-		
-
-		
 
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		
@@ -281,7 +304,7 @@ void DisplayFunc()
 
 		satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
-	} else if (window.CameraMode == 1){
+	} else if (window.CameraMode == window.SHIP_VIEW){
 		// just your slowly turning ship
 		// in view: SHIP, STARS
 		// what moves: SHIP ROTATES
@@ -295,7 +318,7 @@ void DisplayFunc()
 
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
-	} else if(window.CameraMode == 2){
+	} else if(window.CameraMode == window.MARS_THIRD_PERSON){
 		// just Mars slowly spinning
 		// in view: MARS, STARS
 		// what moves: MARS ROTATES
@@ -309,25 +332,42 @@ void DisplayFunc()
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
+		// This chunk draws the TIE Fighters, each with their own orbit paths, altitudes, and speeds
+		//
+		// Note: we initially had it simply generate random rotations and scales for altitudes and
+		// speeds.  That resulted in the ships being drawn in random locations for each draw.
+		// Creating vectors remedied this issue to hold constant values for each TIE Fighter
+		// created.
 		if (window.tie_attack) {
 			mat4 temp = modelview;
 
 			for (int i = 0; i < window.NUM_SATELLITES; i++) {
 				modelview = temp;
-			
+				
+				// Orbit path
 				modelview = rotate(modelview, window.satellite_x_rotations[i], vec3(1.0f, 0.0f, 0.0f));
 				modelview = rotate(modelview, window.satellite_z_rotations[i], vec3(0.0f, 0.0f, 1.0f));
+				
+				// Orbital velocity
 				modelview = rotate(modelview, window.satellite_speeds[i]*window.horizontal_rotation, y_axis);
 
+				// Altitude of orbit
 				modelview = translate(modelview, vec3(0.0f, 0.0f, 6.0f + window.satellite_altitudes[i]));
+				
+				// Makes it face in the correct direction - as far as I know, TIE Fighters
+				// don't effectively fly sideways.
 				modelview = rotate(modelview, 90.0f, y_axis);
+
+				// It would be silly for the TIE Fighters to all be roughly the size of Mars,
+				// so a scale factor of 1/20 seems to work quite well
 				modelview = scale(modelview, vec3(0.05f));
+
 				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 			}
 		}
-	} else if(window.CameraMode == 3){
+	} else if(window.CameraMode == window.MARS_FLYOVER_NO_SHIP){
 		// first person view over mars (NO SHIP)
 		// in view: MARS, STARS
 		// what moves: CAMERA CHANGES POSITION
@@ -342,8 +382,9 @@ void DisplayFunc()
 		modelview = rotate(modelview, window.pan_angle, eye);
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
+		// Same TIE swarm
 		if (window.tie_attack) {
 			mat4 temp = modelview;
 
@@ -360,7 +401,7 @@ void DisplayFunc()
 				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 			}
 		}
-	} else if(window.CameraMode == 4) {
+	} else if(window.CameraMode == window.MARS_FLYOVER_SHIP) {
 		// first person view over mars w/ SHIP
 		// in view: MARS, SHIP, STARS
 		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
@@ -374,7 +415,7 @@ void DisplayFunc()
 		modelview = lookAt(eye, target, target);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		// This un-does the rotation of Mars, resulting in the ship being drawn in a static
 		// position while the planet spins
@@ -390,7 +431,7 @@ void DisplayFunc()
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		glEnable( GL_CULL_FACE );
 
-	} else if(window.CameraMode == 5) {
+	} else if(window.CameraMode == window.STAR_FIELD_VIEW) {
 		// Nice view of just STAR FIELD
 		// in view: STARS
 		// what moves: STARS ROTATE
@@ -435,7 +476,8 @@ int main(int argc, char * argv[])
 		the_file = argv[1];
 	}
 
-
+	// Used to generate the vectors of orbit paths, speeds, and altitudes
+	// for the TIE Fighters.
 	for (int i = 0; i < window.NUM_SATELLITES; i++) {
 		// Generates random changes in altitude from 0 to 5
 		window.satellite_altitudes.push_back(float((rand() % 1000 + 1) / 200));
@@ -464,11 +506,11 @@ int main(int argc, char * argv[])
 
 	window.instructions.push_back("Mitchell Lutzke and Steve Krejci - CS559 - UW-Madison");
 	window.instructions.push_back("");
-	window.instructions.push_back("[On Mars overview] e - enable TIE fighter invasion");
-	window.instructions.push_back("[On Mars flyover] Left arrow / Right arrow - pan camera");
-	window.instructions.push_back("p - toggles pause");
-	window.instructions.push_back("w - toggles wireframe");
 	window.instructions.push_back("x - exits");
+	window.instructions.push_back("w - toggles wireframe");
+	window.instructions.push_back("p - toggles pause");
+	window.instructions.push_back("[On Mars flyover] Left arrow / Right arrow - pan camera");
+	window.instructions.push_back("[On Mars overview, first overview] e - enable TIE fighter invasion");
 
 	if (glewInit() != GLEW_OK)
 	{
@@ -481,7 +523,7 @@ int main(int argc, char * argv[])
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
 
-	if (!Mars.Initialize(the_file))
+	if (!mars.Initialize(the_file))
 		return 0;
 
 	if (!background.Initialize())

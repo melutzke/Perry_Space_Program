@@ -1,9 +1,3 @@
-/*	A more sophisticated Hello World using modern OpenGL
-	Perry Kivolowitz - UW - Madison - CS 559 demo
-
-	Created:	02/28/13
-	Updates:
-*/
 
 #include "vertexattributes.h"
 
