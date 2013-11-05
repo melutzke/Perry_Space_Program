@@ -19,12 +19,6 @@ using namespace glm;
 
 Background::Background() : Object()
 {
-	vec4 lighter_color(this->MakeColor(0, 80, 0));
-	vec4 darker_color = vec4(vec3(lighter_color) / 8.0f, 1.0f);
-	this->colors[0] = darker_color;
-	this->colors[1] = lighter_color * vec4(1.0f, 0.5f, 1.0f, 1.0f);
-	this->colors[2] = lighter_color * vec4(1.0f, 3.0f, 1.0f, 1.0f);
-	this->colors[3] = lighter_color;
 }
 
 
@@ -52,14 +46,13 @@ bool Background::Initialize()
 		VertexAttributesPCNT newPoint = VertexAttributesPCNT(
 			vec3( pX, pY, pZ ), 
 			vec3( float(rand()%1000)/1000.0f ), 
-			vec3( 0, 0, -1 ),
-			vec2( 0, 0)
+			vec3( 0.0f, 0.0f, -1.0f ),
+			vec2( 0.0f )
 		);
 
 
 
 		this->vertices.push_back(newPoint);
-		
 		this->vertex_indices.push_back(vertex_indices.size());
 	}
 

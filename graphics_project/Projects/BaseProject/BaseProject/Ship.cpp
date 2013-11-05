@@ -53,14 +53,22 @@ void Ship::StepShader()
 
 void Ship::RenderSpaceship(int slices) {
         // Build main body of spaceship
-        MeshPack * New_Sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(1.0f, 4.0f, 1.0f), vec3(0.0f, 0.0f, 1.0f));
+
+		mat4 m(1.0f);
+		m = scale(m, vec3(1.0f, 4.0f, 1.0f));
+
+        MeshPack * New_Sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.0f, 0.0f, 1.0f));
         New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
         delete New_Sphere;
                         
         // Build Mars spheres for ship
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-                        MeshPack * Ship_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
+						m = mat4(1.0f);
+						m = translate(m, vec3(x, 0.0f, z));
+						m = scale(m, vec3(0.5f));
+
+                        MeshPack * Ship_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.0f, 0.0f, 1.0f));
                         Ship_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                         delete Ship_sphere;
                 }
@@ -69,7 +77,11 @@ void Ship::RenderSpaceship(int slices) {
         // Build bottom spheres for sihp
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
-                        MeshPack * bot_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, -4.0f, z), vec3(0.5f), vec3(1.0f, 0.0f, 0.0f));
+						m = mat4(1.0f);
+						m = translate(m, vec3(x, -4.0f, z));
+						m = scale(m, vec3(0.5f));
+
+                        MeshPack * bot_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(1.0f, 0.0f, 0.0f));
                         bot_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
                         delete bot_sphere;
                 }
@@ -77,27 +89,46 @@ void Ship::RenderSpaceship(int slices) {
 
         // Build rocket booster cylinders
         float rotation = -45.0f;
-                        
+
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
+						
+						// coords, scale, ---, rotation
+						m = mat4(1.0f);
+						m = translate(m, vec3(x, -4.0f, z));
+						m = scale(m, vec3(0.5f, 4.0f, 0.5f));
 
-                        MeshPack * cyl = Mesh::Cylinder(1.0f, 1.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 4.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-                        cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete cyl;
+                        MeshPack * cyl = Mesh::Cylinder(m, 1.0f, 1.0f, slices, slices, vec3(0.0f, 0.0f, 1.0f));
+                        
+
+						m = mat4(1.0f);
+						m = translate(m, vec3(x, -4.0f, z));
+						m = scale(m, vec3(0.5f, 1.0f, 0.5f));
 
                         // Fancy fans
-                        MeshPack * cyl2 = Mesh::Cylinder(1.0f, 2.0f, slices, slices, vec3(x, -4.0f, z), vec3(0.5f, 1.0f, 0.5f), vec3(0.0f, 0.0f, 1.0f), 0.0f, false);
-                        cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                        delete cyl2;
+                        MeshPack * cyl2 = Mesh::Cylinder(m, 1.0f, 2.0f, slices, slices, vec3(0.0f, 0.0f, 1.0f));
+                        
+						m = mat4(1.0f);
+						m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));
+						m = rotate(m, -90.0f, vec3(0.0f, 0.0f, 1.0f));
+						m = translate(m, vec3(1.5f, 0.5f, 0.0f));
+						m = scale(m, vec3(1.5f, 2.5f, 0.5f));
 
                         // Wings
-                        MeshPack * wing = Mesh::Cylinder(0.5f, 1.0f, slices, slices, vec3(1.5f, 0.5f, 0.0f), vec3(1.5f, 2.5f, 0.5f), vec3(0.0f, 0.0f, 1.0f), rotation, true);
-                        wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+                        MeshPack * wing = Mesh::Cylinder(m, 0.5f, 1.0f, slices, slices, vec3(0.0f, 0.0f, 1.0f));
+                        
+						cyl->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+						cyl2->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+						wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+
+						delete cyl;
+						delete cyl2;
                         delete wing;
 
                         rotation += 90.0f;
-                }
-        }
+				}
+		}
+           
 }
 
 void Ship::RenderSatellite(int slices) {
@@ -105,25 +136,42 @@ void Ship::RenderSatellite(int slices) {
 		// MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
 		// MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 
+		mat4 m(1.0f);
+		m = scale(m, vec3(2.25f));
+
         // Build main body of spaceship
-        MeshPack * body_sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(2.25f), vec3(0.85f));
+        MeshPack * body_sphere = Mesh::Sphere(m, 1.0, slices, slices, vec3(0.85f));
         body_sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
         delete body_sphere;
 
         // Build rocket booster cylinders
         float rotation = 0.0f;
-                        
+
+		m = mat4(1.0f);
+              
         for (float x = -4.0f; x <= 4.0f; x+=8.0f) {
                 float z = 0.0f;
+				m = mat4(1.0f);
+				m = translate(m, vec3(x, 0.0f, z));
+				m = scale(m, vec3(0.4f, 6.0f, 2.5f));
 
-                MeshPack * panel = Mesh::Sphere(1.0f, 6, 6, vec3(x, 0.0f, z), vec3(0.4f, 6.0f, 2.5f), vec3(0.9f));
-                panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                delete panel;
+				//slices/stacks set to 6 to get the hexagonal tie fighter wing shape
+                MeshPack * panel = Mesh::Sphere(m, 1.0f, 6, 6, vec3(0.9f));
 
                 // Wings
-                MeshPack * wing = Mesh::Cylinder(0.5f, 1.25f, slices, slices, vec3(0.0f, 1.25f, 0.0f), vec3(1.0f, 2.75f, 1.0f), vec3(0.85f), rotation, true);
+				m = mat4(1.0f);
+				m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));
+				m = rotate(m, -90.0f, vec3(0.0f, 0.0f, 1.0f));
+				m = translate(m, vec3(0.0f, 1.25f, 0.0f));
+				m = scale(m, vec3(1.0f, 2.75f, 1.0f));
+
+                MeshPack * wing = Mesh::Cylinder(m, 0.5f, 1.25f, slices, slices, vec3(0.85f));
+
                 wing->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-                delete wing;
+				panel->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+
+                delete panel;
+				delete wing;
 
                 rotation += 180.0f;
         }

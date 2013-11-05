@@ -22,18 +22,17 @@ class Mesh
 public:
 	Mesh();
 	~Mesh();
-	static MeshPack* Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing);
-	static MeshPack* Sphere(float radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color);
-	static MeshPack* Mars(float radius, glm::vec3 coords, std::string the_file);
+	static MeshPack* Cylinder(glm::mat4 m, float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 color);
+	static MeshPack* Sphere(glm::mat4 m, float radius, unsigned int stacks, unsigned int slices, glm::vec3 color);
+	static MeshPack* Mars(glm::mat4 m, float radius, std::string the_file);
 	static glm::vec3 getNormal(std::vector<VertexAttributesPCNT>& vertices, int i, int stacks, int slices);
-	//MeshPack Sphere(int stacks, int slices, glm::vec3 color);
 
 private:
-	void BuildNormalVisualizationGeometry();
 	static int up(int index, int stacks, int slices);
 	static int down(int index, int stacks, int slices);
 	static int left(int index, int stacks, int slices);
 	static int right(int index, int stacks, int slices);
+	static void wind(std::vector<GLuint>& vertex_indices, int stacks, int slices);
 
 	glm::vec4 colors[2];
 	std::vector<VertexAttributesPCNT> vertices;

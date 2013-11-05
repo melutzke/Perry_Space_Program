@@ -74,7 +74,7 @@ bool Mars::Initialize(string the_file)
 
 	mat4 m;
 
-	MeshPack * New_Cylinder = Mesh::Mars(5.0, vec3(0.0f, 0.0f, 0.0f), the_file);
+	MeshPack * New_Cylinder = Mesh::Mars(m, 5.0, the_file);
 	New_Cylinder->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
 	delete New_Cylinder;
 			
