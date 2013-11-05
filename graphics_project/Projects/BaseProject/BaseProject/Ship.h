@@ -29,8 +29,7 @@ public:
 	void TakeDown();
 	//void DrawNormals(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time);
 	Shader shader;
-	Shader solid_color;
-	Shader stripes_model_space;
+	Shader noise;
 	std::vector<Shader *> shaders;
 
 private:

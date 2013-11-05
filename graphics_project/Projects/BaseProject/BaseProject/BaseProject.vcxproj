@@ -19,7 +19,7 @@
     <ClCompile Include="object.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="Ship.cpp" />
-    <ClCompile Include="top.cpp" />
+    <ClCompile Include="mars.cpp" />
     <ClCompile Include="vertexattributes.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -29,12 +29,15 @@
     <None Include="glew32.dll" />
     <None Include="ILU.dll" />
     <None Include="ILUT.dll" />
+    <None Include="mars_cell.frag" />
     <None Include="mars_shader.frag" />
     <None Include="mars_shader.vert" />
+    <None Include="ship_noise.frag" />
+    <None Include="ship_noise.vert" />
     <None Include="solid_shader.frag" />
     <None Include="solid_shader.vert" />
-    <None Include="top_shader.frag" />
-    <None Include="top_shader.vert" />
+    <None Include="ship_ads.frag" />
+    <None Include="ship_ads.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="background.h" />
@@ -44,11 +47,12 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="Ship.h" />
-    <ClInclude Include="top.h" />
+    <ClInclude Include="mars.h" />
     <ClInclude Include="vertexattributes.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="mars.txt" />
+    <Text Include="mars_full.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\..\..\Desktop\mars.bmp" />

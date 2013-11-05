@@ -3,7 +3,7 @@
 
 	In this example program, I will build a solid
 	object comprised of two triangle fans. Note 
-	these are topologically triangle fans but the
+	these are Marsologically triangle fans but the
 	OpenGL triangle fan functionality is not being
 	used. 
 
@@ -20,6 +20,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <fstream>
+#include <iostream>
 
 #include "ilcontainer.h"
 
@@ -27,7 +29,7 @@
 #include <math.h>
 
 #include "background.h"
-#include "top.h"
+#include "Mars.h"
 #include "Ship.h"
 
 
@@ -76,7 +78,7 @@ public:
 } window;
 
 Background background;
-Top top;
+Mars Mars;
 Ship ship;
 Ship satellite;
 
@@ -111,7 +113,7 @@ void CloseFunc()
 {
 	window.window_handle = -1;
 	background.TakeDown();
-	top.TakeDown();
+	Mars.TakeDown();
 	ship.TakeDown();
 	satellite.TakeDown();
 	_CrtDumpMemoryLeaks();
@@ -134,7 +136,12 @@ void KeyboardFunc(unsigned char c, int x, int y)
 	switch (c)
 	{
 	case 's':
-		top.StepShader();
+		ship.StepShader();
+		satellite.StepShader();
+		break;
+
+	case 'm':
+		Mars.StepShader();
 		break;
 
 	case '+':
@@ -148,7 +155,7 @@ void KeyboardFunc(unsigned char c, int x, int y)
 		break;
 
 	case 'n':
-		top.EnableNormals(window.normals = !window.normals);
+		Mars.EnableNormals(window.normals = !window.normals);
 		break;
 
 	case 'w':
@@ -285,7 +292,7 @@ void DisplayFunc()
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		if (window.tie_attack) {
 			mat4 temp = modelview;
@@ -329,7 +336,7 @@ void DisplayFunc()
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 		if (window.tie_attack) {
 			mat4 temp = modelview;
@@ -372,7 +379,7 @@ void DisplayFunc()
 		glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 		
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		// This un-does the rotation of Mars, resulting in the ship being drawn in a static
 		// position while the planet spins
@@ -434,7 +441,7 @@ void DisplayFunc()
 		// what moves: MARS ROTATES
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
@@ -444,7 +451,7 @@ void DisplayFunc()
 		// what moves: CAMERA CHANGES POSITION
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == 4) {
 		// first person view over mars w/ SHIP
@@ -452,7 +459,7 @@ void DisplayFunc()
 		// what moves: CAMERA CHANGES POSITION, SHIP CHANGES POSITION
 
 		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		top.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		Mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		
 		//ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
@@ -491,6 +498,15 @@ void TimerFunc(int value)
 
 int main(int argc, char * argv[])
 {
+	string the_file;
+	if ( argc != 2 ){ // argc should be 2 for correct execution
+		cout << "usage: "<< argv[0] <<" <filename>\n";
+		return -1;
+	} else {
+		the_file = argv[1];
+	}
+
+
 	for (int i = 0; i < window.NUM_SATELLITES; i++) {
 		// Generates random changes in altitude from 0 to 5
 		window.satellite_altitudes.push_back(float((rand() % 1000 + 1) / 200));
@@ -536,10 +552,10 @@ int main(int argc, char * argv[])
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
 
-	if (!background.Initialize())
+	if (!Mars.Initialize(the_file))
 		return 0;
 
-	if (!top.Initialize(window.slices))
+	if (!background.Initialize())
 		return 0;
 
 	if (!ship.Initialize(window.slices, true))

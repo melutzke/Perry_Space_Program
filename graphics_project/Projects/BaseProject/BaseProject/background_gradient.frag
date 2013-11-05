@@ -14,7 +14,7 @@ uniform ivec2 size;
 	window will be rasterized.
 
 	t gets a normalized "address" of the current fragment.
-	ct gets a lerp of top two colors in the horizontal direction
+	ct gets a lerp of Mars two colors in the horizontal direction
 	cb gets a lerp of bottom two colors in the horizontal direction
 	FragColor gets a lerp of ct and cb based on the vertical value of t
 */

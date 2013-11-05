@@ -40,25 +40,25 @@ void Shader::CommonSetup(const float time, const GLint * size, const GLfloat * p
 
 	if (this->time_handle != BAD_GL_VALUE)
 		glUniform1f(this->time_handle, time);
-	this->GLReturnedError("Top::Draw - after time_handle");
+	this->GLReturnedError("Mars::Draw - after time_handle");
 	if (this->size_handle != BAD_GL_VALUE)
 		glUniform2iv(this->size_handle, 1, size);
-	this->GLReturnedError("Top::Draw - after size_handle");
+	this->GLReturnedError("Mars::Draw - after size_handle");
 	if (this->projection_matrix_handle != BAD_GL_VALUE)
 		glUniformMatrix4fv(this->projection_matrix_handle, 1, GL_FALSE, projection);
-	this->GLReturnedError("Top::Draw - after projection_matrix_handle");
+	this->GLReturnedError("Mars::Draw - after projection_matrix_handle");
 	if (this->modelview_matrix_handle != BAD_GL_VALUE)
 		glUniformMatrix4fv(this->modelview_matrix_handle, 1, GL_FALSE, modelview);
-	this->GLReturnedError("Top::Draw - after modelview_matrix_handle");
+	this->GLReturnedError("Mars::Draw - after modelview_matrix_handle");
 	if (this->mvp_handle != BAD_GL_VALUE)
 		glUniformMatrix4fv(this->mvp_handle, 1, GL_FALSE, mvp);
-	this->GLReturnedError("Top::Draw - after mvp_handle");
+	this->GLReturnedError("Mars::Draw - after mvp_handle");
 	if (this->normal_matrix_handle != BAD_GL_VALUE)
 		glUniformMatrix3fv(this->normal_matrix_handle, 1, GL_FALSE, nm);
-	this->GLReturnedError("Top::Draw - after normal_matrix_handle");
+	this->GLReturnedError("Mars::Draw - after normal_matrix_handle");
 	if (this->camera_mode_handle != BAD_GL_VALUE)
 		glUniform1i(this->camera_mode_handle, CameraMode);
-	this->GLReturnedError("Top::Draw - after CameraMode");
+	this->GLReturnedError("Mars::Draw - after CameraMode");
 }
 
 void Shader::Use()

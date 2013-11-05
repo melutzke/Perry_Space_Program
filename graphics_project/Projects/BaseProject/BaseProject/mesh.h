@@ -22,9 +22,9 @@ class Mesh
 public:
 	Mesh();
 	~Mesh();
-	static MeshPack* Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing);
+	static MeshPack* Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing);
 	static MeshPack* Sphere(float radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color);
-	static MeshPack* Experimental(float radius, unsigned int rings, unsigned int sectors, glm::vec3 coords);
+	static MeshPack* Mars(float radius, glm::vec3 coords, std::string the_file);
 	static glm::vec3 getNormal(std::vector<VertexAttributesPCNT>& vertices, int i, int stacks, int slices);
 	//MeshPack Sphere(int stacks, int slices, glm::vec3 color);
 

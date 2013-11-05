@@ -57,7 +57,7 @@ void Ship::RenderSpaceship(int slices) {
         New_Sphere->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
         delete New_Sphere;
                         
-        // Build top spheres for ship
+        // Build Mars spheres for ship
         for (float x = -2.0f; x <= 2.0f; x+=4.0f) {
                 for (float z = -2.0f; z <= 2.0f; z+=4.0f) {
                         MeshPack * Ship_sphere = Mesh::Sphere(1.0, slices, slices, vec3(x, 0.0f, z), vec3(0.5f), vec3(0.0f, 0.0f, 1.0f));
@@ -103,7 +103,7 @@ void Ship::RenderSpaceship(int slices) {
 void Ship::RenderSatellite(int slices) {
 		// Reminder of Mesh functions:
 		// MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
-		// MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
+		// MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 
         // Build main body of spaceship
         MeshPack * body_sphere = Mesh::Sphere(1.0, slices, slices, vec3(0.0f), vec3(2.25f), vec3(0.85f));
@@ -187,21 +187,15 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 		glBindVertexArray(0);
 	}
 
-	if (!this->shader.Initialize("top_shader.vert", "top_shader.frag"))
+	if (!this->shader.Initialize("ship_ads.vert", "ship_ads.frag"))
 		return false;
 
-	//if (!this->shader.Initialize("mars_shader.vert", "mars_shader.frag"))
-	//	return false;
-
-	//if (!this->solid_color.Initialize("solid_shader.vert", "solid_shader.frag"))
-	//	return false;
-
-	//if (!this->stripes_model_space.Initialize("stripe_model_space.vert", "stripe_model_space.frag"))
-	//	return false;
+	if (!this->noise.Initialize("ship_noise.vert", "ship_noise.frag"))
+		return false;
 
 	this->shaders.push_back(&this->shader);
-	this->shaders.push_back(&this->solid_color);
-	this->shaders.push_back(&this->stripes_model_space);
+	this->shaders.push_back(&this->noise);
+	//this->shaders.push_back(&this->stripes_model_space);
 
 	if (this->GLReturnedError("Background::Initialize - on exit"))
 		return false;
@@ -213,7 +207,7 @@ void Ship::TakeDown()
 {
 	this->vertices.clear();
 	this->shader.TakeDown();
-	this->solid_color.TakeDown();
+	this->noise.TakeDown();
 	super::TakeDown();
 }
 

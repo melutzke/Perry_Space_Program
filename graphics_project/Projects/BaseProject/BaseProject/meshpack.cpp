@@ -37,6 +37,7 @@ void MeshPack::addToScene(vector<VertexAttributesPCNT>& arg_vertices, vector<GLu
 	arg_normal_indices.insert(arg_normal_indices.end(), this->normal_indices.begin(), this->normal_indices.end());
 
 	temp_vertices.clear();
+
 }
 void MeshPack::rotate(float degrees, vec3 direction){
 	this->m = glm::rotate(this->m, degrees, direction);

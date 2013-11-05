@@ -47,7 +47,7 @@ void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAt
 
 int Mesh::up (int index, int stacks, int slices) {
 	if (index >= (stacks-1)*slices)
-		// Top row – there IS no 'up'
+		// Mars row – there IS no 'up'
 		return index;
 	else
 		return index + slices;
@@ -74,7 +74,7 @@ int Mesh::right (int index, int stacks, int slices) {
 		return index + 1;
 }
 
-MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
+MeshPack* Mesh::Cylinder(float Mars_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
 {
 	if (slices < 0) slices = 1;
 
@@ -107,7 +107,7 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
 
-			float curr_radius = (top_radius - bot_radius)*(r*R) + bot_radius;
+			float curr_radius = (Mars_radius - bot_radius)*(r*R) + bot_radius;
 
             float const y = r * R;
             float const x = cos(2*M_PI * s * S);
@@ -250,12 +250,12 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int sta
 	return NewNormal;
 }
 
-MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int slices, vec3 coords)
+MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 {
-
+	int stacks, slices;
 
 	vector<float> vec;
-    ifstream    file("mars.txt");
+    ifstream file(the_file);
 	string      line;
 	int counter = 0;
 	if (file)
@@ -278,8 +278,11 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 			}
 			iss.clear();
 		}
+	} else {
+		cout << "Tried to process an invalid file" << endl;
+		return false;
 	}
-	std::cout << "done reading file" << endl;
+	std::cout << "Read altitudes from file " << the_file << endl;
 
 	if (slices < 0) slices = 1;
 
@@ -341,7 +344,7 @@ MeshPack * Mesh::Experimental(float radius, unsigned int stacks, unsigned int sl
 	cout << "About to make mesh pack" << endl;
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
-	cout << vertices.size() << " vertices created";
+	cout << vertices.size() << " vertices created " << " for Mars" << endl;
 
 	cout << "Read in " << vec.size() << " altitude points" << endl;
 
