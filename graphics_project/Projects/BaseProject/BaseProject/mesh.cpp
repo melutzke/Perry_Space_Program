@@ -37,10 +37,6 @@ Mesh::~Mesh()
 	// nothing to destruct yet
 }
 
-void BuildLastNormals(vector<VertexAttributesP> normal_vertices, vector<VertexAttributesP> normal_indices){
-	
-}
-
 int Mesh::up (int index, int stacks, int slices) {
 	if (index >= (stacks-1)*slices)
 		// Top row – there IS no 'up'
@@ -70,30 +66,25 @@ int Mesh::right (int index, int stacks, int slices) {
 		return index + 1;
 }
 
-MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 coords, glm::vec3 scaleVec, glm::vec3 color, float rotation, bool isWing)
+void Mesh::wind (vector<GLuint>& vertex_indices, int stacks, int slices){
+	for(int i = 0; i < stacks-1; i++){
+		for(int k = 0; k < slices-1; k++){
+			vertex_indices.push_back(k+1+(i*slices));
+			vertex_indices.push_back(k+(i*slices));
+			vertex_indices.push_back(k+((i+1)*slices));
+
+			vertex_indices.push_back(k+((i)*slices)+1);
+			vertex_indices.push_back(k+((i+1)*slices));
+			vertex_indices.push_back(k+((i+1)*slices)+1);
+		}
+	}
+}
+
+
+MeshPack* Mesh::Cylinder(mat4 m, float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 color)
 {
 	if (slices < 0) slices = 1;
 
-	mat4 m(1.0f);
-	
-	// This rotation is here principally for the wing cylinders, also used
-	// on the TIE fighters
-	m = rotate(m, rotation, vec3(0.0f, 1.0f, 0.0f));
-
-	// Rotates the cylinders to lay 'down the x-axis'
-	//
-	// This created a few issues of reference when we were trying to
-	// create wings outside of this class (we had to change our
-	// frame of reference
-	if (isWing) {
-		m = rotate(m, -90.0f, vec3(0.0f, 0.0f, 1.0f));
-	}
-
-	// The last of the matrix transformations, I promise
-	m = translate(m, coords);
-	m = scale(m, scaleVec);
-
-	
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
@@ -103,7 +94,6 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 	vector<GLuint> vertex_indices;
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
-
 
 	// Here's where we start finding the positions of the points
 	// in the mesh.
@@ -115,9 +105,9 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 	//
 	// It should be noticed that this builds the cylinder from the
 	// bottom, up.  We start at y=0, and build up to y=1.
-	float const R = 1./(float)(stacks-1);
-    float const S = 1./(float)(slices-1);
-    int r, s;
+	float const R = 1.0f/(float)(stacks-1);
+    float const S = 1.0f/(float)(slices-1);
+    unsigned int r, s;
 	
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
@@ -125,63 +115,45 @@ MeshPack* Mesh::Cylinder(float top_radius, float bot_radius, unsigned int stacks
 			// Clever math to find the current stack's radius
 			float curr_radius = (top_radius - bot_radius)*(r*R) + bot_radius;
 
-			// This method was done to plot points as opposed to iterating over only
-			// the stacks and applying matrix rotations as it proved rather
-			// difficult to get a uniform distribution of points by the
-			// latter method.
             float const y = r * R;
-            float const x = cos(2*M_PI * s * S);
-            float const z = sin(2*M_PI * s * S);
-
-            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), color, normalize(vec3(x, y, z)), vec2(0.0f) ));
+            float const x = cosf(float(2*M_PI) * s * S);
+            float const z = sinf(float(2*M_PI) * s * S);
+            vertices.push_back(
+				VertexAttributesPCNT(
+					vec3(m * vec4(vec3(x * curr_radius, y, z * curr_radius), 1)), 
+					color, 
+					normalize(vec3(x, y, z)), 
+					vec2(0.0f) 
+				)
+			);
 		}
     }
 
-	for(int i = 0; i < stacks-1; i++){
-		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+1+(i*slices));
-			vertex_indices.push_back(k+(i*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices));
 
-			vertex_indices.push_back(k+((i)*slices)+1);
-			vertex_indices.push_back(k+((i+1)*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices)+1);
-		}
-	}
+	// pass vertex_indices array by reference, fill it with correctly wound positions
+	Mesh::wind(vertex_indices, stacks, slices);
 
-	for(int i = 0; i < vertices.size(); i++){
-		// Step 1) get face vectors of three of triangles associated with the point (each triangle cannot share a side!)
-		// Step 2) average them
-		// Step 3) profit!
-
+	// calculate true normals
+	for(unsigned int i = 0; i < vertices.size(); i++){
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
 	MeshPack * newPack = new MeshPack(vertices, vertex_indices, normal_indices);
 
+	// clear temporary storage
 	vertices.clear();
 	vertex_indices.clear();
 
 	vertices.shrink_to_fit();
 	vertex_indices.shrink_to_fit();
 
-	
-
 	return newPack;
 }
 
-MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, vec3 coords, vec3 scaleVec, vec3 color)
+MeshPack * Mesh::Sphere(mat4 m, float radius, unsigned int stacks, unsigned int slices, vec3 color)
 {
 
 	if (slices < 0) slices = 1;
-
-
-	mat4 m = mat4(1.0f);
-	
-	m = translate(m, coords);
-	m = scale(m, scaleVec);
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
@@ -193,39 +165,34 @@ MeshPack * Mesh::Sphere(float radius, unsigned int stacks, unsigned int slices, 
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
 
-	float const R = 1./(float)(stacks-1);
-    float const S = 1./(float)(slices-1);
-    int r, s;
+	float const R = 1.0f/(float)(stacks-1);
+    float const S = 1.0f/(float)(slices-1);
+    unsigned r, s;
 	
 	// This is similar to how we construct the cylinder, except now our
 	// y-values are scaled by something more complex than the current
 	// stack
 	for(r = 0; r < stacks; r++){
 		for(s = 0; s < slices; s++) {
-
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
+            float const y = sinf( float(-M_PI_2 + M_PI * r * R) );
+            float const x = cosf( float(2*M_PI * s * S) ) * sinf( float(M_PI * r * R) );
+            float const z = sinf( float(2*M_PI * s * S) ) * sinf( float(M_PI * r * R) );
 			
-            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), color, normalize(vec3(x, y, z)), vec2(0.0f) ));
+            vertices.push_back(
+				VertexAttributesPCNT(
+					vec3(m * vec4(vec3(x * radius, y * radius, z * radius), 1)), // position
+					color,														 // color
+					normalize(vec3(x, y, z)),									 // normal
+					vec2(-float(s*S), -float(r*R))								 // texture coordinate
+				)
+			);
 		}
     }
 
-	for(int i = 0; i < stacks-1; i++){
-		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+1+(i*slices));
-			vertex_indices.push_back(k+(i*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices));
+	//pass vertex_indices array by reference, fill it with correctly wound positions
+	Mesh::wind(vertex_indices, stacks, slices);
 
-			vertex_indices.push_back(k+((i)*slices)+1);
-			vertex_indices.push_back(k+((i+1)*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices)+1);
-		}
-	}
-
-	for(int i = slices; i < vertices.size() - slices; i++){
+	for(unsigned int i = slices; i < vertices.size() - slices; i++){
 		vertices[i].normal = getNormal(vertices, i, stacks, slices);
 	}
 
@@ -263,9 +230,12 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int sta
 	return NewNormal;
 }
 
-MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
+MeshPack * Mesh::Mars(mat4 m, float radius, string the_file)
 {
 	int stacks, slices;
+
+	// Parsing input files in C++ code learned via
+	// http://www.cplusplus.com/forum/beginner/26993/
 
 	vector<float> vec;
     ifstream file(the_file);
@@ -281,11 +251,11 @@ MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 			while ( getline(iss, token, '\t') )
 			{
 				if(counter > 1){
-					vec.push_back(atof(token.c_str()));
+					vec.push_back(float(atof(token.c_str())));
 				} else if(counter == 0){
-					slices = atof(token.c_str());
+					slices = atoi(token.c_str());
 				} else if(counter == 1){
-					stacks = atof(token.c_str());
+					stacks = atoi(token.c_str());
 				}
 				counter++;
 			}
@@ -295,74 +265,43 @@ MeshPack * Mesh::Mars(float radius, vec3 coords, string the_file)
 		cout << "Tried to process an invalid file" << endl;
 		return false;
 	}
-	std::cout << "Read altitudes from file " << the_file << endl;
-
-	if (slices < 0) slices = 1;
-
-	mat4 m = mat4(1.0f);
-
-	m = translate(m, coords);
+	
+	cout << "Read altitudes from file " << the_file << endl;
 
 	const vec3 n = normalize(vec3(1.0f, 0.0f, 0.0f));
 	const vec4 x_axis(1.0f, 0.0f, 0.0f, 1.0f);
 	const vec4 z_axis(0.0f, 0.0f, 1.0f, 1.0f);
 	const vec3 y_axis(0.0f, 1.0f, 0.0f);
 
-	vector<VertexAttributesPCNT> vertices;
-	vector<GLuint> vertex_indices;
-	vector<GLuint> normal_indices;
-	vector<VertexAttributesP> normal_vertices;
-
-	float const R = 1./(float)(stacks-1);
-    float const S = 1./(float)(slices-1);
-    int r, s;
-	
-	cout << "Generating points" << endl;
-	int counterer = 0;
+	cout << "Generating initial sphere MeshPack" << endl;
 
 	// This is identical to the generation of a regular sphere, except for the
 	// altitude addition, which is scaled by 1/6 to allow for a reasonable-
-	// looking Red Planet
-	for(r = 0; r < stacks; r++){
-		for(s = 0; s < slices; s++) {
+	// looking Red Planet. The altitudes are added in the following for-loop
+	MeshPack * mars = Mesh::Sphere(m, radius, stacks, slices, vec3(1.0f));
 
-            float const y = sin( -M_PI_2 + M_PI * r * R );
-            float const x = cos(2*M_PI * s * S) * sin( M_PI * r * R );
-            float const z = sin(2*M_PI * s * S) * sin( M_PI * r * R );
-			vec3 altitude_addition = vec3(vec[vec.size()-1-counterer] * 1/6.0f) * normalize(vec3(x, y, z));
-            vertices.push_back(VertexAttributesPCNT(vec3(m * vec4(vec3(x * radius, y * radius, z * radius) + altitude_addition, 1)), vec3(1, 0.5, 0), normalize(vec3(x, y, z)), vec2(-s*S, -r*R) ));
-			counterer++;
-		}
-    }
+	cout << "MeshPack complete, moving points to mars altitudes" << endl;
 
-	cout << "Making index combinations" << endl;
-
-	for(int i = 0; i < stacks-1; i++){
-		for(int k = 0; k < slices-1; k++){
-			vertex_indices.push_back(k+1+(i*slices));
-			vertex_indices.push_back(k+(i*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices));
-
-			vertex_indices.push_back(k+((i)*slices)+1);
-			vertex_indices.push_back(k+((i+1)*slices));
-			
-			vertex_indices.push_back(k+((i+1)*slices)+1);
-		}
+	// Altitudes, after being read from the file, are added to each vector. 
+	// We are careful to aim them in the direction of the sphere's normal
+	for(unsigned int i = 0; i < mars->vertices.size(); i++){
+		vec3 altitude_addition = vec3( vec[vec.size()-1-i] * 1/6.0f ) * mars->vertices[i].normal;
+		mars->vertices[i].position += altitude_addition;
 	}
+	
+	cout << "Altitude shifting completed" << endl;
 
 	cout << "Creating normals" << endl;
 
-	for(int i = 0; i < vertices.size(); i++){
-		vertices[i].normal = getNormal(vertices, i, stacks, slices);
+	for(unsigned int i = 0; i < mars->vertices.size(); i++){
+		mars->vertices[i].normal = getNormal(mars->vertices, i, stacks, slices);
 	}
 
-	cout << "About to make mesh pack" << endl;
+	cout << "Finalized Mars MeshPack" << endl;
 
-	MeshPack * newPack = new MeshPack(vertices, vertex_indices, vertex_indices);
-	cout << vertices.size() << " vertices created " << " for Mars" << endl;
+	cout << mars->vertices.size() << " vertices created " << " for Mars" << endl;
 
 	cout << "Read in " << vec.size() << " altitude points" << endl;
 
-	return newPack;
+	return mars;
 }

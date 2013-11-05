@@ -71,21 +71,19 @@ bool Mars::Initialize(string the_file)
 
 	mat4 m;
 
-	MeshPack * mars_ojbect = Mesh::Mars(5.0, vec3(0.0f, 0.0f, 0.0f), the_file);
-	mars_ojbect->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
-	delete mars_ojbect;
+
+	MeshPack * mars_object = Mesh::Mars(m, 5.0, the_file);
+	mars_object->addToScene(this->vertices, this->vertex_indices, this->normal_indices);
+	delete mars_object;
 			
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
-	
-
 	this->texture = ILContainer();
-	if( ! this->texture.Initialize("mars_full_res.jpg") ) assert(false);
-		
+	if( ! this->texture.Initialize("mars_full_res.jpg") )
+		return false;
 	
-
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 1));	// Same
@@ -146,7 +144,6 @@ void Mars::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, con
 	this->texture.Bind();
 	this->texture.il_texture_handle;
 
-	//modelview = rotate(modelview, time * 10.0f, vec3(0.0f, 1.0f, 0.0f));
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
