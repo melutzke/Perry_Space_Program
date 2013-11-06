@@ -514,9 +514,14 @@ int main(int argc, char * argv[])
 
 	window.instructions.push_back("Mitchell Lutzke and Steve Krejci - CS559 - UW-Madison");
 	window.instructions.push_back("");
+	window.instructions.push_back("F1 - cycles scenes");
 	window.instructions.push_back("x - exits");
-	window.instructions.push_back("w - toggles wireframe");
 	window.instructions.push_back("p - toggles pause");
+	window.instructions.push_back("t - toggles texture");
+	window.instructions.push_back("w - toggles wireframe");
+	window.instructions.push_back("m - toggles Mars shaders");
+	window.instructions.push_back("s - toggles ship and satellite shaders");
+	window.instructions.push_back("i,j,k,l - rotates modelview matrix for advanced viewing");
 	window.instructions.push_back("[On Mars flyover] Left arrow / Right arrow - pan camera");
 	window.instructions.push_back("[On Mars overview, first overview] e - enable TIE fighter invasion");
 

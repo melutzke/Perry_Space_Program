@@ -1,11 +1,7 @@
-/*	Perry Kivolowitz - University of Wisconsin - Madison 
-	Computer Sciences Department
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
 
-	A sample hello world like program demonstrating modern
-	OpenGL techniques. 
-
-	Created:	2/25/13
-	Updates:
+	The Shader class is a base for the shader.
 */
 
 #include "shader.h"
