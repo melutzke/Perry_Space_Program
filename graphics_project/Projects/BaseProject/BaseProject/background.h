@@ -21,12 +21,11 @@ public:
 	Background();
 	virtual bool Initialize();
 	virtual void Draw(const glm::ivec2 & size);
-	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0, const int CameraMode = 1);
+	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::vec3 & eye, const glm::ivec2 & size, const float time = 0, const int CameraMode = 1);
 	void TakeDown();
 	BackgroundShader shader;
 
 private:
-	glm::vec4 colors[4];
 	std::vector<VertexAttributesPCNT> vertices;
 	typedef Object super;
 };

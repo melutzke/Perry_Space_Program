@@ -24,7 +24,7 @@ public:
 	~Mesh();
 	static MeshPack* Cylinder(glm::mat4 m, float top_radius, float bot_radius, unsigned int stacks, unsigned int slices, glm::vec3 color);
 	static MeshPack* Sphere(glm::mat4 m, float radius, unsigned int stacks, unsigned int slices, glm::vec3 color);
-	static MeshPack* Mars(glm::mat4 m, float radius, std::string the_file);
+	static MeshPack* Mars(glm::mat4 m, float radius, float altitude_scale, std::string the_file);
 	static glm::vec3 getNormal(std::vector<VertexAttributesPCNT>& vertices, int i, int stacks, int slices);
 
 private:

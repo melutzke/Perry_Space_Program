@@ -17,12 +17,22 @@ using namespace glm;
 Mars::Mars() : Object()
 {
 	this->shader_index = 0;
-	this->texture;
+	this->texture_index = 0;
+	this->altitude_scale = 1.0f / 6.0f;
+}
+
+inline float RandRange(float x){
+	return (float)rand()/((float)RAND_MAX/x);
 }
 
 void Mars::StepShader()
 {
 	this->shader_index = ++this->shader_index % this->shaders.size();
+}
+
+void Mars::StepTexture()
+{
+	this->texture_index = ++this->texture_index % this->textures.size();
 }
 
 bool Mars::Initialize(string the_file)
@@ -41,18 +51,13 @@ bool Mars::Initialize(string the_file)
 
 	mat4 m;
 
-	MeshPack * mars_object = Mesh::Mars(m, 5.0, the_file);
+	MeshPack * mars_object = Mesh::Mars(m, 5.0, this->altitude_scale, the_file);
 	mars_object->addToScene(this->vertices, this->vertex_indices);
 	delete mars_object;
 
 	if (!this->PostGLInitialize(&this->vertex_array_handle, &this->vertex_coordinate_handle, this->vertices.size() * sizeof(VertexAttributesPCNT), &this->vertices[0]))
 		return false;
 
-	// Mars texture, all 13 megabytes of it
-	this->texture = ILContainer();
-	if( ! this->texture.Initialize("mars_full_res.jpg") )
-		return false;
-	
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 2));	// Note offset - legacy of older code
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(VertexAttributesPCNT), (GLvoid *) (sizeof(vec3) * 1));	// Same
@@ -75,6 +80,18 @@ bool Mars::Initialize(string the_file)
 		glBindVertexArray(0);
 	}
 
+	// Mars texture, all 13 megabytes of it
+	this->mars_texture = new ILContainer();
+	this->perry_texture = new ILContainer();
+
+	if( ! this->mars_texture->Initialize("mars_full_res.jpg") )
+		return false;
+	if( ! this->perry_texture->Initialize("perry_sphere.jpg") )
+		return false;
+
+	this->textures.push_back(this->mars_texture);
+	this->textures.push_back(this->perry_texture);
+
 	if (!this->shader.Initialize("mars_shader.vert", "mars_shader.frag"))
 		return false;
 
@@ -92,7 +109,12 @@ bool Mars::Initialize(string the_file)
 
 void Mars::TakeDown()
 {
+	delete this->mars_texture;
+	delete this->perry_texture;
+
 	this->vertices.clear();
+	this->vertex_indices.clear();
+
 	this->shader.TakeDown();
 	this->cell.TakeDown();
 	super::TakeDown();
@@ -103,28 +125,26 @@ void Mars::Draw(const ivec2 & size)
 	assert(false);
 }
 
-void Mars::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time, const int CameraMode)
+void Mars::Draw(const mat4 & projection, mat4 modelview, const vec3 & eye, const ivec2 & size, const float time, const int CameraMode)
 {
 	if (this->GLReturnedError("Mars::Draw - on entry"))
 		return;
+
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
-
-	this->texture.Bind();
-	this->texture.il_texture_handle;
 
 	mat4 mvp = projection * modelview;
 	mat3 nm = inverse(transpose(mat3(modelview)));
 
+	this->textures[this->texture_index]->Bind();
 	this->shaders[this->shader_index]->Use();
 
 	glViewport(0, 0, size.x, size.y);
 
 	this->GLReturnedError("Mars::Draw - after use");
-	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
+	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode, value_ptr(eye));
 	this->GLReturnedError("Mars::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
-	glPointSize(0.5f);
 	
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);
 	glBindVertexArray(0);

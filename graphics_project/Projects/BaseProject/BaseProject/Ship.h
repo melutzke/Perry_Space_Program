@@ -24,7 +24,7 @@ public:
 	void RenderSatellite(int slices);
 	bool Initialize(int slices, bool isSpaceship);
 	virtual void Draw(const glm::ivec2 & size);
-	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time = 0, const int CameraMan = 0);
+	virtual void Draw(const glm::mat4 & projection, glm::mat4 modelview, const glm::vec3 & eye, const glm::ivec2 & size, const float time = 0, const int CameraMan = 0);
 	void StepShader();
 	void TakeDown();
 	//void DrawNormals(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time);

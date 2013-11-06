@@ -26,6 +26,7 @@ Shader::Shader()
 	this->normal_matrix_handle = BAD_GL_VALUE;
 	this->size_handle = BAD_GL_VALUE;
 	this->camera_mode_handle = BAD_GL_VALUE;
+	this->eye_handle = BAD_GL_VALUE;
 }
 
 /*	This Shader() class implements or assumes a basic set of uniforms will be
@@ -35,9 +36,8 @@ Shader::Shader()
 	loaded with the CustomShader() function.
 */
 
-void Shader::CommonSetup(const float time, const GLint * size, const GLfloat * projection, const GLfloat * modelview, const GLfloat * mvp, const GLfloat * nm, const int CameraMode)
+void Shader::CommonSetup(const float time, const GLint * size, const GLfloat * projection, const GLfloat * modelview, const GLfloat * mvp, const GLfloat * nm, const int CameraMode, const GLfloat * eye)
 {
-
 	if (this->time_handle != BAD_GL_VALUE)
 		glUniform1f(this->time_handle, time);
 	this->GLReturnedError("Mars::Draw - after time_handle");
@@ -59,6 +59,9 @@ void Shader::CommonSetup(const float time, const GLint * size, const GLfloat * p
 	if (this->camera_mode_handle != BAD_GL_VALUE)
 		glUniform1i(this->camera_mode_handle, CameraMode);
 	this->GLReturnedError("Mars::Draw - after CameraMode");
+	if (this->eye_handle != BAD_GL_VALUE)
+		glUniform3fv(this->eye_handle, 1, eye);
+	this->GLReturnedError("Mars::Draw - after eye");
 }
 
 void Shader::Use()
@@ -112,13 +115,14 @@ bool Shader::Initialize(char * vertex_shader_file, char * fragment_shader_file)
 
 	glUseProgram(this->program_id);
 
-	this->modelview_matrix_handle = glGetUniformLocation(this->program_id, (const GLchar *) "modelview_matrix");
-	this->projection_matrix_handle = glGetUniformLocation(this->program_id, (const GLchar *) "projection_matrix");
-	this->normal_matrix_handle = glGetUniformLocation(this->program_id, (const GLchar *) "normal_matrix");
-	this->mvp_handle = glGetUniformLocation(this->program_id, (const GLchar *) "mvp");
-	this->size_handle = glGetUniformLocation(this->program_id, (const GLchar *) "size");
-	this->time_handle = glGetUniformLocation(this->program_id, (const GLchar *) "time");
-	this->camera_mode_handle = glGetUniformLocation(this->program_id, (const GLchar *) "CameraMode");
+	this->modelview_matrix_handle =		glGetUniformLocation(this->program_id, (const GLchar *) "modelview_matrix");
+	this->projection_matrix_handle =	glGetUniformLocation(this->program_id, (const GLchar *) "projection_matrix");
+	this->normal_matrix_handle =		glGetUniformLocation(this->program_id, (const GLchar *) "normal_matrix");
+	this->mvp_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "mvp");
+	this->size_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "size");
+	this->time_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "time");
+	this->camera_mode_handle =			glGetUniformLocation(this->program_id, (const GLchar *) "CameraMode");
+	this->eye_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "eye");
 
 	glUseProgram(0);
 

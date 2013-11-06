@@ -227,7 +227,7 @@ glm::vec3 Mesh::getNormal(vector<VertexAttributesPCNT>& vertices, int i, int sta
 	return NewNormal;
 }
 
-MeshPack * Mesh::Mars(mat4 m, float radius, string the_file)
+MeshPack * Mesh::Mars(mat4 m, float radius, float altitude_scale, string the_file)
 {
 	int stacks, slices;
 
@@ -282,12 +282,15 @@ MeshPack * Mesh::Mars(mat4 m, float radius, string the_file)
 	// Altitudes, after being read from the file, are added to each vector. 
 	// We are careful to aim them in the direction of the sphere's normal
 	for(unsigned int i = 0; i < mars->vertices.size(); i++){
-		vec3 altitude_addition = vec3( vec[vec.size()-1-i] * 1/6.0f ) * mars->vertices[i].normal;
+		vec3 altitude_addition = vec3( vec[vec.size()-1-i] * altitude_scale ) * mars->vertices[i].normal;
 		mars->vertices[i].position += altitude_addition;
+	}
+
+	for(unsigned i = 0; i < mars->vertices.size()-slices; i+=slices){
+		mars->vertices[i+slices-1].position = mars->vertices[i].position;
 	}
 	
 	cout << "Altitude shifting completed" << endl;
-
 	cout << "Creating normals" << endl;
 
 	for(unsigned int i = 0; i < mars->vertices.size(); i++){
@@ -295,9 +298,7 @@ MeshPack * Mesh::Mars(mat4 m, float radius, string the_file)
 	}
 
 	cout << "Finalized Mars MeshPack" << endl;
-
 	cout << mars->vertices.size() << " vertices created " << " for Mars" << endl;
-
 	cout << "Read in " << vec.size() << " altitude points" << endl;
 
 	return mars;

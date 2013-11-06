@@ -232,7 +232,7 @@ void Ship::Draw(const ivec2 & size)
 	assert(false);
 }
 
-void Ship::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, const float time, const int CameraMode)
+void Ship::Draw(const mat4 & projection, mat4 modelview, const vec3 & eye, const ivec2 & size, const float time, const int CameraMode)
 {
 	if (this->GLReturnedError("Ship::Draw - on entry"))
 		return;
@@ -247,7 +247,7 @@ void Ship::Draw(const mat4 & projection, mat4 modelview, const ivec2 & size, con
 	glViewport(0, 0, size.x, size.y);
 
 	this->GLReturnedError("Ship::Draw - after use");
-	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode);
+	this->shaders[this->shader_index]->CommonSetup(time, value_ptr(size), value_ptr(projection), value_ptr(modelview), value_ptr(mvp), value_ptr(nm), CameraMode, value_ptr(eye));
 	this->GLReturnedError("Ship::Draw - after common setup");
 	glBindVertexArray(this->vertex_array_handle);
 	glDrawElements(GL_TRIANGLES , this->vertex_indices.size(), GL_UNSIGNED_INT , &this->vertex_indices[0]);

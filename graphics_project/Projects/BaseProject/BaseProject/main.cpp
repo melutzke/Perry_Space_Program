@@ -14,17 +14,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <iostream>
-
-#include "ilcontainer.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "ilcontainer.h"
 #include "background.h"
 #include "Mars.h"
 #include "Ship.h"
-
-
 
 using namespace std;
 using namespace glm;
@@ -148,7 +144,6 @@ void CloseFunc()
 	mars.TakeDown();
 	ship.TakeDown();
 	satellite.TakeDown();
-	_CrtDumpMemoryLeaks();
 }
 
 void ReshapeFunc(int w, int h)
@@ -178,6 +173,10 @@ void KeyboardFunc(unsigned char c, int x, int y)
 
 	case 'm':
 		mars.StepShader();
+		break;
+
+	case 't':
+		mars.StepTexture();
 		break;
 
 	case '+':
@@ -263,6 +262,13 @@ void SpecialFunc(int c, int x, int y)
 				window.pan_angle -= 360.0f;
 		}
 		break;
+
+
+	case GLUT_KEY_F1:
+		window.pan_angle = 0.0f;
+		window.CameraMode++;
+		if(window.CameraMode > window.STAR_FIELD_VIEW) window.CameraMode = window.SATELLITE_VIEW;
+		break;
 	}
 }
 
@@ -287,6 +293,7 @@ void DisplayFunc()
 	mat4 projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 
 	mat4 modelview;
+	vec3 eye = vec3(0.0f);
 
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
 
@@ -297,12 +304,12 @@ void DisplayFunc()
 
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 
-		satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		satellite.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if (window.CameraMode == window.SHIP_VIEW){
 		// just your slowly turning ship
@@ -311,28 +318,29 @@ void DisplayFunc()
 
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		modelview = translate(modelview, vec3(0.0f, 0.0f, -5.0f));
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
 
-		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		ship.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 	} else if(window.CameraMode == window.MARS_THIRD_PERSON){
 		// just Mars slowly spinning
 		// in view: MARS, STARS
 		// what moves: MARS ROTATES
-		
-		modelview = lookAt(vec3(0.0f, 0.0f, -14.0f), vec3(0.0f), y_axis);
+		vec3 eye = vec3(0.0f, 0.0f, -14.0f);
+		vec3 target = vec3(0.0f);
+		modelview = lookAt(eye, target, y_axis);
 
 		if(window.tie_attack)
 			projection = perspective(75.0f, window.window_aspect, 0.1f, 1000.0f);
 		else
 			projection = perspective(50.0f, window.window_aspect, 0.1f, 1000.0f);
 		
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		modelview = rotate(modelview, window.horizontal_rotation, y_axis);
-		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		// This chunk draws the TIE Fighters, each with their own orbit paths, altitudes, and speeds
 		//
@@ -364,7 +372,7 @@ void DisplayFunc()
 				// so a scale factor of 1/20 seems to work quite well
 				modelview = scale(modelview, vec3(0.05f));
 
-				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+				satellite.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 			}
 		}
 	} else if(window.CameraMode == window.MARS_FLYOVER_NO_SHIP){
@@ -381,8 +389,8 @@ void DisplayFunc()
 		modelview = lookAt(eye, target, target);
 		modelview = rotate(modelview, window.pan_angle, eye);
 
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 
 		// Same TIE swarm
 		if (window.tie_attack) {
@@ -398,7 +406,7 @@ void DisplayFunc()
 				modelview = translate(modelview, vec3(0.0f, 0.0f, 6.0f + window.satellite_altitudes[i]));
 				modelview = rotate(modelview, 90.0f, y_axis);
 				modelview = scale(modelview, vec3(0.1));
-				satellite.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+				satellite.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 			}
 		}
 	} else if(window.CameraMode == window.MARS_FLYOVER_SHIP) {
@@ -414,8 +422,8 @@ void DisplayFunc()
 
 		modelview = lookAt(eye, target, target);
 		
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
-		mars.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		mars.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		
 		// This un-does the rotation of Mars, resulting in the ship being drawn in a static
 		// position while the planet spins
@@ -428,7 +436,7 @@ void DisplayFunc()
 		modelview = rotate(modelview, 90.0f, vec3(0.0f, 0.0f, 1.0f));		// Tilts the ship down (and away from camera)
 		modelview = scale(modelview, vec3(0.10f));							// Makes ship appropriately smaller than Mars
 		glDisable( GL_CULL_FACE );
-		ship.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		ship.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 		glEnable( GL_CULL_FACE );
 
 	} else if(window.CameraMode == window.STAR_FIELD_VIEW) {
@@ -447,7 +455,7 @@ void DisplayFunc()
 
 		modelview = lookAt(eye, target, y_axis);
 
-		background.Draw(projection, modelview, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
+		background.Draw(projection, modelview, eye, window.size, (window.paused ? window.time_last_pause_began : current_time) - window.total_time_paused, window.CameraMode);
 	
 	}
 
