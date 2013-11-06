@@ -30,6 +30,7 @@ public:
 	//void DrawNormals(const glm::mat4 & projection, glm::mat4 modelview, const glm::ivec2 & size, const float time);
 	Shader shader;
 	Shader noise;
+	Shader rainbow;
 	std::vector<Shader *> shaders;
 
 private:

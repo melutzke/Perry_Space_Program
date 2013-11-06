@@ -83,7 +83,7 @@ bool Mars::Initialize(string the_file)
 
 	this->shaders.push_back(&this->shader);
 	this->shaders.push_back(&this->cell);
-
+	
 	if (this->GLReturnedError("Background::Initialize - on exit"))
 		return false;
 
