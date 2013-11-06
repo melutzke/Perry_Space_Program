@@ -210,8 +210,12 @@ bool Ship::Initialize(int slices, bool isSpaceship)
 	if (!this->noise.Initialize("ship_noise.vert", "ship_noise.frag"))
 		return false;
 
+	if (!this->rainbow.Initialize("ship_ads.vert", "ship_rainbow.frag"))
+		return false;
+
 	this->shaders.push_back(&this->shader);
 	this->shaders.push_back(&this->noise);
+	this->shaders.push_back(&this->rainbow);
 
 	if (this->GLReturnedError("Background::Initialize - on exit"))
 		return false;
@@ -224,6 +228,7 @@ void Ship::TakeDown()
 	this->vertices.clear();
 	this->shader.TakeDown();
 	this->noise.TakeDown();
+	this->rainbow.TakeDown();
 	super::TakeDown();
 }
 

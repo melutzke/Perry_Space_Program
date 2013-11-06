@@ -34,6 +34,7 @@
     <None Include="mars_shader.vert" />
     <None Include="ship_noise.frag" />
     <None Include="ship_noise.vert" />
+    <None Include="ship_rainbow.frag" />
     <None Include="solid_shader.frag" />
     <None Include="solid_shader.vert" />
     <None Include="ship_ads.frag" />

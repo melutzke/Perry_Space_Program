@@ -10,7 +10,6 @@ uniform mat4 modelview_matrix;
 uniform mat3 normal_matrix;
 uniform vec3 eye;
 
-
 flat out vec3 color;
 out vec3 normal;
 out vec3 position;

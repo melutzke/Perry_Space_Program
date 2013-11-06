@@ -14,6 +14,7 @@ flat out vec3 color;
 out vec3 normal;
 out vec3 position;
 out vec2 tex_coord;
+out vec3 addition;
 
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -108,5 +109,6 @@ void main()
 	color = vertex_color;
 	normal = normalize(normal_matrix * vertex_normal);
 	position = vec3(modelview_matrix * vec4(vertex_position,1.0));
-	gl_Position = mvp * vec4(vertex_position, 1.0) + (snoise(vec3(modelview_matrix * vec4(vertex_position,1.0)))/4.0);
+	vec3 addition = vec3(snoise(position)) * normal / 5.0f;
+	gl_Position = mvp * (vec4(vertex_position + addition, 1));
 }

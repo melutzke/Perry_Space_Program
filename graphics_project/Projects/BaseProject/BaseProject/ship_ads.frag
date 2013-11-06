@@ -15,6 +15,7 @@ uniform vec3 eye;
 const float shininess = 100.0f;
 vec3 light_position;
 
+
 vec3 ads( )
 {
   if(CameraMode == 0 || CameraMode == 1){

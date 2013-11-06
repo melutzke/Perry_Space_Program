@@ -107,15 +107,6 @@ float snoise(vec3 v)
                                 dot(p2,x2), dot(p3,x3) ) );
   }
 
-
-
-
-
-
-
-
-
-
 vec3 ads( )
 {
   vec3 n = normal;

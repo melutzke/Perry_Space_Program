@@ -62,6 +62,7 @@
     <None Include="ship_noise.frag" />
     <None Include="ship_noise.vert" />
     <None Include="mars_cell.frag" />
+    <None Include="ship_rainbow.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="background.h">
