@@ -16,6 +16,9 @@ out vec3 position;
 out vec2 tex_coord;
 out vec3 addition;
 
+// GLSL Noise Functions found at
+// https://github.com/ashima/webgl-noise/tree/master/src
+
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }

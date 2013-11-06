@@ -34,9 +34,9 @@ vec3 ads( )
   vec3 v = normalize(-position);
   vec3 r = reflect(-s, n);
   float s_dot_n = max(dot(s, n), 0.0);
-  float n_dot_pos = max(0.0, dot(n, light_position));
+  float n_dot_pos = max(0.0, dot(n, normalize(light_position)));
 
-  return genColor(position) * n_dot_pos / 250 + genColor(position) * (s_dot_n > 0 ? color * pow(max(dot(r, v), 0.0), shininess) : vec3(0.0)) / 2;
+  return genColor(position) * n_dot_pos + genColor(position) * (s_dot_n > 0 ? color * pow(max(dot(r, v), 0.0), shininess) : vec3(0.0)) / 2;
 }
 
 void main()

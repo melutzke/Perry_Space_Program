@@ -95,6 +95,8 @@ MeshPack* Mesh::Cylinder(mat4 m, float top_radius, float bot_radius, unsigned in
 	vector<GLuint> normal_indices;
 	vector<VertexAttributesP> normal_vertices;
 
+	// Sphere and Cylinder Generation based off of
+	// http://stackoverflow.com/questions/7957254/connecting-sphere-vertices-opengl
 	// Here's where we start finding the positions of the points
 	// in the mesh.
 	//
@@ -169,6 +171,8 @@ MeshPack * Mesh::Sphere(mat4 m, float radius, unsigned int stacks, unsigned int 
     float const S = 1.0f/(float)(slices-1);
     unsigned r, s;
 	
+	// Sphere and Cylinder Generation based off of
+	// http://stackoverflow.com/questions/7957254/connecting-sphere-vertices-opengl
 	// This is similar to how we construct the cylinder, except now our
 	// y-values are scaled by something more complex than the current
 	// stack

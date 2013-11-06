@@ -2,6 +2,10 @@
 	Mitchell Lutzke & Steve Krejci
 
 	The main class is the driver of the Mars generating program.
+
+	This program is based on the More Sophisticated example provided
+	by Perry Kivolowitz. It uses code pieces from around the internet,
+	links to references should be available above these sections of code.
 */
 
 #include <iostream>
@@ -296,6 +300,11 @@ void DisplayFunc()
 	vec3 eye = vec3(0.0f);
 
 	glPolygonMode(GL_FRONT_AND_BACK, window.wireframe ? GL_LINE : GL_FILL);
+
+
+	/* The following set of if statements sets up and draws each scenes
+	   This should be implemented as a separate class, but we are out
+	   of time. This is NOT the optimal way of structuring it, but it works */
 
 	if (window.CameraMode == window.SATELLITE_VIEW) {
 		// just your slowly turning satellite

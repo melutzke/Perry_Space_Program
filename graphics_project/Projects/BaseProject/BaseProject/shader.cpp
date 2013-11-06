@@ -1,4 +1,12 @@
-/*	Perry Kivolowitz - University of Wisconsin - Madison 
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
+
+	The Ship class is used to generate the spaceship and satellite/TIE Fighters
+	used in certain scenes of the program.
+
+		A modification of a file provide by...
+
+	Perry Kivolowitz - University of Wisconsin - Madison 
 	Computer Sciences Department
 
 	A sample hello world like program demonstrating modern
@@ -121,6 +129,7 @@ bool Shader::Initialize(char * vertex_shader_file, char * fragment_shader_file)
 	this->mvp_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "mvp");
 	this->size_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "size");
 	this->time_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "time");
+	// camera mode is used for lighting conditions in several shaders
 	this->camera_mode_handle =			glGetUniformLocation(this->program_id, (const GLchar *) "CameraMode");
 	this->eye_handle =					glGetUniformLocation(this->program_id, (const GLchar *) "eye");
 
