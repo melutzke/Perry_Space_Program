@@ -31,6 +31,7 @@ public:
 	Shader shader;
 	Shader cell;
 	ILContainer * mars_texture;
+	ILContainer * mars_height;
 	ILContainer * perry_texture;
 	std::vector<Shader *> shaders;
 	std::vector<ILContainer *> textures;

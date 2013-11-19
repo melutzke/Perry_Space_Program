@@ -131,8 +131,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories);C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\IL\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;;ILU.lib;ILUT.lib;DevIL.lib;devil.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\IL\lib;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\IL;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\freeglut\lib;C:\Users\SteveK917\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib;C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\glew\lib;L:\My Documents\Perry_Space_Program\Graphics\glew\lib;C:\Users\TEMP\Desktop\Graphics\freeglut\lib;E:\Graphics\freeglut\lib;C:\Users\Mitchell Lutzke\Desktop\Graphics\freeglut\lib;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Users\Mitchell Lutzke\Desktop\graphics\freeglut\lib;%(AdditionalLibraryDirectories);C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\IL\lib;C:\Users\Mitchell Lutzke\Documents\GitHub\Perry_Space_Program\Graphics\IL</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;devil.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -13,18 +13,12 @@ uniform int CameraMode;
 uniform vec3 eye;
 
 const float shininess = 100.0f;
-vec3 light_position;
+vec3 light_position = (CameraMode != 4 && CameraMode != 2 && CameraMode != 1 && CameraMode != 0) ? vec3((modelview_matrix) * vec4(200, 50.0, -100.0, 1)) : vec3(200, 50.0, 200.0);
 
 
 vec3 ads( )
 {
-  if(CameraMode == 0 || CameraMode == 1){
-    light_position = vec3(200, 50.0, 200.0);
-  } else if(CameraMode == 4){
-	light_position = vec3((modelview_matrix) * vec4(0, -50, 50.0, 1));
-  } else {
-	light_position = vec3((modelview_matrix) * vec4(200, 50.0, -100.0, 1));
-  }
+  
   vec3 n = normal;
 
   if (!gl_FrontFacing)

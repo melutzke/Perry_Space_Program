@@ -82,14 +82,21 @@ bool Mars::Initialize(string the_file)
 
 	// Mars texture, all 13 megabytes of it
 	this->mars_texture = new ILContainer();
+	// Mars height map, 15 megs
+	this->mars_height = new ILContainer();
+	// Perry - Priceless...
 	this->perry_texture = new ILContainer();
+	// for everything else there's Mastercard
 
 	if( ! this->mars_texture->Initialize("mars_full_res.jpg") )
+		return false;
+	if( ! this->mars_height->Initialize("mars_height.jpg") )
 		return false;
 	if( ! this->perry_texture->Initialize("perry_sphere.jpg") )
 		return false;
 
 	this->textures.push_back(this->mars_texture);
+	this->textures.push_back(this->mars_height);
 	this->textures.push_back(this->perry_texture);
 
 	if (!this->shader.Initialize("mars_shader.vert", "mars_shader.frag"))
@@ -111,6 +118,7 @@ void Mars::TakeDown()
 {
 	delete this->mars_texture;
 	delete this->perry_texture;
+	delete this->mars_height;
 
 	this->vertices.clear();
 	this->vertex_indices.clear();

@@ -1,3 +1,9 @@
+/*	CS 559 Project 2
+	Mitchell Lutzke & Steve Krejci
+
+	The VertextAttributes class holds position, color, normal, and texture
+	information for the points in our mesh.
+*/
 
 #include "vertexattributes.h"
 
